@@ -26,7 +26,7 @@ mainPanel(
                 tabPanel("Data Manipulation",
                          dataTableOutput("table")),
                 tabPanel("Assignments",
-                         dataTableOutput("assignments"))
+                         dataTableOutput("assign")) #displays assignment table
                 
     )
 )

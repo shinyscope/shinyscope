@@ -4,7 +4,7 @@
 #load helper scripts
 HSLocation <- "helperScripts/"
 source(paste0(HSLocation, "ShinyServerFunctions.R"))
-
+source(paste0(HSLocation, "AssignmentTable.R"))
 
 shinyServer(function(input, output, session) {
  
@@ -19,6 +19,12 @@ shinyServer(function(input, output, session) {
     )
   })
   
+  #this takes the reactive data output and creates a reactive assignment table
+  assignments <- reactive({
+    data <- data()
+    return (createAssignTable(data))
+  })
+  
   # tab you can see the original uploaded data
   output$data <- renderDataTable({
     if(is.null(input$upload)){
@@ -27,6 +33,15 @@ shinyServer(function(input, output, session) {
     read.table(input$upload$datapath, sep = ",", header = TRUE)
     
   })
+  
+  # creates a table of the assignments
+  output$assign <- renderDataTable({
+    AT <- assignments()
+    AT %>%
+      filter(type == "raw_points") %>% #filtering by raw_points yields only the assignments
+      select(gs_col, category)
+  })
+  
   # -----------------Manipulate dataframe---------------------
   modified_data <- reactiveVal(NULL)
   
