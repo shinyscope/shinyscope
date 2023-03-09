@@ -7,6 +7,9 @@ source(paste0(HSLocation, "ShinyServerFunctions.R"))
 source(paste0(HSLocation, "AssignmentTable.R"))
 
 shinyServer(function(input, output, session) {
+  
+  
+ 
  
   #uploading a file
   data <- reactive({
@@ -22,17 +25,19 @@ shinyServer(function(input, output, session) {
   #this takes the reactive data output and creates a reactive assignment table
   assignments <- reactive({
     data <- data()
-    return (createAssignTable(data))
+    createAssignTable(data)
   })
   
   # tab you can see the original uploaded data
   output$data <- renderDataTable({
+    data <- data()
     if(is.null(input$upload)){
       return("Upload some data first")
     }
+    else{
     read.table(input$upload$datapath, sep = ",", header = TRUE)
-    
-  })
+    }
+      })
   
   # creates a table of the assignments
   output$assign <- renderDataTable({
