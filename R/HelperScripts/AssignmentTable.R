@@ -1,11 +1,15 @@
 createAssignTable <- function(data) {
   gs_cols <- names(data)
   
-  assignments <- tibble(gs_col = gs_cols) %>%
+  assignments <- tibble(colnames = gs_cols) %>%
     #General regex to rename assignments and add a column "category" in table
-    mutate(gs_col = str_replace_all(tolower(gs_col), "[\\s:-]+", "_"),
-           category = substr(str_replace_all(tolower(gs_col), "[\\s:-]+", "_"), 1, regexpr("_", str_replace_all(tolower(gs_col), "[\\s:-]+", "_")) - 1),
-           type = if_else(!str_detect(gs_col, "name|sections|max|time|late"), "raw_points", NA_character_),
-           gs_col = paste0(gs_col, "_", type)) # concatenate gs_col and type
+    mutate(new_colnames = str_replace_all(tolower(colnames), "[\\s:]+", "_"),
+           category = substr(str_replace_all(tolower(colnames), "[\\s:]+", "_"), 1, regexpr("_", str_replace_all(tolower(colnames), "[\\s:-]+", "_")) - 1),
+           type = if_else(!str_detect(new_colnames, "name|sections|max|time|late"), "_-_raw_points", "" ),
+    
+    #filter(type == "raw_points")%>%
+    
+           new_colnames = paste0(new_colnames, type))%>% # concatenate gs_col and type
+    select(colnames,new_colnames, category)
   return(assignments)
 }

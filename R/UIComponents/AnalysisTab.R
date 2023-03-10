@@ -22,10 +22,10 @@ mainPanel(
                 #dataTableOutput("table")
                 tabPanel("Assignments",
                         dataTableOutput("assign")), #displays assignment table
-    
+                tabPanel("Pivot Longer Table",
+                         dataTableOutput("pivotlonger")), #displays assignment table
                 tabPanel("Original Data",
                          dataTableOutput("data")),
-                #
                 tabPanel("Data Manipulation",
                          dataTableOutput("table"))
                 

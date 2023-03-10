@@ -1,17 +1,14 @@
 # load libraries
 
-
 #load helper scripts
 HSLocation <- "helperScripts/"
 source(paste0(HSLocation, "ShinyServerFunctions.R"))
 source(paste0(HSLocation, "AssignmentTable.R"))
+source(paste0(HSLocation, "Pivot.R"))
 
 shinyServer(function(input, output, session) {
   
-  
- 
- 
-  #uploading a file
+  #####------------------------uploading a file------------------------#####
   data <- reactive({
     req(input$upload)
     
@@ -22,13 +19,7 @@ shinyServer(function(input, output, session) {
     )
   })
   
-  #this takes the reactive data output and creates a reactive assignment table
-  assignments <- reactive({
-    data <- data()
-    createAssignTable(data)
-  })
-  
-  # tab you can see the original uploaded data
+  #####------------------------ the original uploaded data------------------------#####
   output$data <- renderDataTable({
     data <- data()
     if(is.null(input$upload)){
@@ -39,23 +30,59 @@ shinyServer(function(input, output, session) {
     }
       })
   
-  # creates a table of the assignments
+  #####------------------------takes reactive data output ------------------------#####
+  #####------------------------and creates a reactive assignment table------------#####
+  assignments <- reactive({
+    data <- data()
+    createAssignTable(data)
+  })
+  #####------------------------creates a table of the assignments------------------------#####
   output$assign <- renderDataTable({
-    AT <- assignments()
-    AT %>%
-      filter(type == "raw_points") %>% #filtering by raw_points yields only the assignments
-      select(gs_col, category)
+    assignments()
+})
+  
+  #####------------------------takes the new colnames and replaces original colnames--#####
+  #####------------------------makes a new data frame new_data------------------------#####
+  new_data <- reactive({
+    # Get the new column names from the form data frame
+    new_colnames <- assignments()$new_colnames
+    # Rename the columns of the data frame using the new column names
+    data_new_colnames <- data() %>%
+      rename(!!!setNames(names(.), new_colnames))
+    #fix dates
+    new_time <- data_new_colnames%>%
+        mutate(across(contains("submission_time"), lubridate::ymd_hms), # convert to datetimes
+              across(contains("lateness"), lubridate::hms))
+    return(new_time)
   })
   
-  # -----------------Manipulate dataframe---------------------
+  output$table <- renderDataTable({
+    new_data()
+  })
+  
+  
+  
+  #####------------------------pivot_longer function------------------------#####
+  pivotdf <- reactive({
+    new_data <- new_data()
+    pivot(new_data)
+  })
+  
+   output$pivotlonger <- renderDataTable({
+    pivotdf()
+  })
+
+
+
+  #####------------------------Manipulate dataframe------------------------#####
   modified_data <- reactiveVal(NULL)
   
-  #---------- select columns & calculate the mean 
+  #####------------------------select columns & calculate the mean------------------------##### 
   observe({
     numeric_cols <- colnames(data())[sapply(data(), is.numeric)] #this only selects numeric columns
     updateSelectizeInput(session, "cols", choices =  numeric_cols) # all columns: updateSelectizeInput(session, "cols", choices = colnames(data()))
   })
-  #---------- select columns & calculate the mean 
+  #####------------------------select columns & calculate the mean------------------------##### 
 
   #it seems to calculate the mean correctly
   
@@ -72,19 +99,19 @@ shinyServer(function(input, output, session) {
   #for calculating the mean and return the result
   # RETURNS THE MEAN by adding a column at the end
 
-  output$table <- renderDataTable({
-    if(is.null(result())){return()}
-    datatable(result())
-  })
+  # output$table <- renderDataTable({
+  #   if(is.null(result())){return()}
+  #   datatable(result())
+  # })
   
-  #-----------------Download File-----------------
+  #####------------------------Download File------------------------#####
   observeEvent(input$upload, {
     output$downloadBtn <- renderUI({
       downloadButton("downloadData", "Download Data")
     })
   })
   
-  # CSV file is named modified_data_YYYY-MM-DD.csv
+  #####------------------------CSV file is named modified_data_YYYY-MM-DD.csv------------------------#####
   output$downloadData <- downloadHandler(
     filename = function() {
       paste("modified_data", Sys.Date(), ".csv", sep = "")
