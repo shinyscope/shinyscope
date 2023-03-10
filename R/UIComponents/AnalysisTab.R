@@ -20,13 +20,14 @@ sidebarPanel (
 mainPanel(
   tabsetPanel(
                 #dataTableOutput("table")
+                tabPanel("Assignments",
+                        dataTableOutput("assign")), #displays assignment table
+    
                 tabPanel("Original Data",
                          dataTableOutput("data")),
                 #
                 tabPanel("Data Manipulation",
-                         dataTableOutput("table")),
-                tabPanel("Assignments",
-                         dataTableOutput("assign")) #displays assignment table
+                         dataTableOutput("table"))
                 
     )
 )
