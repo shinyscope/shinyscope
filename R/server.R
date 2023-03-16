@@ -83,7 +83,23 @@ shinyServer(function(input, output, session) {
     updateSelectizeInput(session, "cols", choices =  numeric_cols) # all columns: updateSelectizeInput(session, "cols", choices = colnames(data()))
   })
   #####------------------------select columns & calculate the mean------------------------##### 
+ 
 
+   ## create dropdown for all assignments only in NIKITA
+   observe({
+     assignments <- assignments()
+     assignments <- assignments %>%
+       filter(!str_detect(colnames, "Name|Sections|Max|Time|Late"))
+     updateSelectizeInput(session, "assign_niki", choices = assignments$colnames) #make dropdown of assignments
+   })
+   
+   ## update categories
+   observe({
+     categories <- categories()
+     updateSelectizeInput(session, "cat_niki", choices = categories$Categories) #make dropdown of assignments
+     
+   })
+   
   #it seems to calculate the mean correctly
   
   result <- eventReactive(input$calculate, {
@@ -119,4 +135,19 @@ shinyServer(function(input, output, session) {
     content = function(file) {
       write.csv(result(), file, row.names = FALSE)
     })
+  
+  categories <- reactive({
+    num <- input$num_cat
+    Categories <- sprintf("Category %d",1:num)
+    cat_table <- data.frame(Categories) %>%
+      mutate(Weights = 1/num) %>%
+      mutate(Assignments_Included = "")
+  })
+  
+  output$cat_table <- renderDataTable({
+    categories <- categories()
+    updateCategories(categories, input$cat_niki, input$assign_niki)
+  })
+  
+  
 })
