@@ -14,11 +14,12 @@ createAssignTable <- function(data) {
   return(assignments)
 }
 
-updateCategories <- function(cat_table, category, assignments){
+updateCategories <- function(cat_table, category, assignments, weight){
   row <- as.numeric(parse_number(category))
   cat_table[row, 3] <- ""
   for(x in 1: length(assignments)){
-    cat_table[row,3] <- paste(cat_table[row, 3], assignments[x])
+    cat_table[row,3] <- paste(cat_table[row, 3],assignments[x])
   }
+  cat_table[row, 2] <- as.numeric(weight)
   return(cat_table)
 }
