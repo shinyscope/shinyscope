@@ -140,13 +140,14 @@ shinyServer(function(input, output, session) {
     num <- input$num_cat
     Categories <- sprintf("Category %d",1:num)
     cat_table <- data.frame(Categories) %>%
-      mutate(Weights = 1/num) %>%
+      mutate(Weights = 0) %>%
       mutate(Assignments_Included = "")
   })
   
+
   output$cat_table <- renderDataTable({
     categories <- categories()
-    updateCategories(categories, input$cat_niki, input$assign_niki)
+    updateCategories(categories, input$cat_niki, input$assign_niki, input$weight)
   })
   
   
