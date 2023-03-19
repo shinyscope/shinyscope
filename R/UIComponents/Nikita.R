@@ -1,7 +1,7 @@
-Nikita <- tabPanel("Nikita", titlePanel("Nikita"),
+Nikita <- tabPanel("Nikita", titlePanel("Assignment View"),
                  sidebarPanel (
-                   h4("Nikita"),
-                   actionButton("edit", "Edit:"),
+                   h4("Create a Grade Category:"),
+                   actionButton("edit", "Edit Existing Category"),
                    textInput("cat_name", "Enter Category Name", value = "", width = NULL, placeholder = NULL),
                    sliderInput("weight", "How Much is This Worth?", min = 0, max = 1, value = 0.5),
                    selectizeInput("assign_niki", "Select Assignments:",
@@ -12,6 +12,7 @@ Nikita <- tabPanel("Nikita", titlePanel("Nikita"),
                  mainPanel(
                    h4("Grading Syllabus"),
                    dataTableOutput("cat_table"),
+                   dataTableOutput("tester"),
                    dataTableOutput("leftover")
                  )
 )

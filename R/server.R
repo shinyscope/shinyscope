@@ -188,14 +188,14 @@ shinyServer(function(input, output, session) {
   observeEvent(input$create, {
     assignments <- ""
     for(x in 1: length(input$assign_niki)){
-      assignments <- paste(assignments, input$assign_niki[x])
+      assignments <- paste(assignments, input$assign_niki[x], sep = ", ")
     }
     
     new_row <- c(input$cat_name, input$weight, assignments)
     
     if (is.null(categories$cat_table)){
       categories$cat_table <- data.frame(matrix(ncol = 3, nrow = 1)) %>%
-        rename(Categories = "X1", Type = "X2", Assignments_Included = "X3")
+        rename(Categories = "X1", Weights = "X2", Assignments_Included = "X3")
       categories$cat_table[1,1] <- input$cat_name
       categories$cat_table[1,2] <- input$weight
       categories$cat_table[1,3] <- assignments
@@ -222,6 +222,7 @@ shinyServer(function(input, output, session) {
   ## create dropdown for all assignments only in NIKITA
   observe({
     updateSelectizeInput(session, "assign_niki", choices = unassigned$unassigned_table) #make dropdown of assignments
+    
   })
   
   observeEvent(input$edit, {
@@ -229,10 +230,13 @@ shinyServer(function(input, output, session) {
     updateSelectizeInput(session, "change_assign", choices = unassigned$unassigned_table) #make dropdown of assignments
   })
   
+  
+
+  
   observeEvent(input$done, {
     categories$cat_table <- updateRow(categories$cat_table, input$nRow, input$change_name, input$change_weight, input$change_assign)
-  # unassigned$unassigned_table <- removeAssigned(unassigned$unassigned_table, input$change_name)
     removeModal()
   })
+  
   
 })

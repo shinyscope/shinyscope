@@ -31,12 +31,13 @@ updateRow <- function(cat_table, row, name, weight, assignments){
   return (cat_table)
 }
 
-removeAssigned <- function(unassigned_table, assignments){
-  len <- length(assignments)
+removeAssigned <- function(assignments){
+  len <- nrow(assignments)
+  new_table <- data.frame(c(len))
   for (x in 1: len){
     assign <- assignments[x]
     num <- which(unassigned_table[,1] == assign)
-    unassigned_table <- unassigned_table[-num,]
+    new_table[x] <- num
   }
-  return (unassigned_table)
+  return (new_table)
 }
