@@ -134,7 +134,7 @@ shinyServer(function(input, output, session) {
   # 
   # output$cat_table <- renderDataTable({
   #   categories <- categories()
-  #   updateCategories(categories, input$num_cat, input$assign_niki, input$weight)
+  #   updateCategories(categories, input$num_cat, input$assign, input$weight)
   # })
   
   
@@ -187,12 +187,16 @@ shinyServer(function(input, output, session) {
   
   observeEvent(input$create, {
     assignments <- ""
-    for(x in 1: length(input$assign_niki)){
-      assignments <- paste(assignments, input$assign_niki[x], sep = ", ")
-    }
+    for(x in 1: length(input$assign)){
+      assignments <- paste(assignments, input$assign[x], sep = ", ")
+      updateTextInput(session, "assign", value = "")
+      updateTextInput(session, "cat_name", value = "")
+      #updateSliderInput(session, "weight", )
+    } # creates string of assignments
     
     new_row <- c(input$cat_name, input$weight, assignments)
     
+    # updates category table with new row with new name, weights, assignments
     if (is.null(categories$cat_table)){
       categories$cat_table <- data.frame(matrix(ncol = 3, nrow = 1)) %>%
         rename(Categories = "X1", Weights = "X2", Assignments_Included = "X3")
@@ -205,11 +209,13 @@ shinyServer(function(input, output, session) {
    
   })
   
-  output$cat_table <- renderDataTable({ categories$cat_table})
+  # renders table of categories with respective assignments and weights
+  output$cat_table <- renderDataTable({ datatable(categories$cat_table, editable = TRUE)})
   
-  
+  #reactive unassigned assignments table
   unassigned <- reactiveValues(unassigned_table = NULL)
   
+  # creates unassigned assignments table
   observe({
     unassigned$unassigned_table <- data.frame(assignments()) %>%
       select(colnames) %>%
@@ -221,18 +227,18 @@ shinyServer(function(input, output, session) {
   
   ## create dropdown for all assignments only in NIKITA
   observe({
-    updateSelectizeInput(session, "assign_niki", choices = unassigned$unassigned_table) #make dropdown of assignments
+    updateSelectizeInput(session, "assign", choices = unassigned$unassigned_table) #make dropdown of assignments
     
   })
   
+  output$test <- renderDataTable(({removeAssigned(input$assign)}))
+  # modal opens when Edit button pressed
   observeEvent(input$edit, {
     showModal(modal_confirm)
     updateSelectizeInput(session, "change_assign", choices = unassigned$unassigned_table) #make dropdown of assignments
   })
   
-  
-
-  
+  # modal closes when Done button pressed, categories are updated
   observeEvent(input$done, {
     categories$cat_table <- updateRow(categories$cat_table, input$nRow, input$change_name, input$change_weight, input$change_assign)
     removeModal()

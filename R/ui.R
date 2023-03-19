@@ -10,6 +10,7 @@ library(shinythemes)
 UICompDirectory <- "UIComponents/"
 source(paste0(UICompDirectory, "AnalysisTab.R"), local = TRUE)
 source(paste0(UICompDirectory, "ConfigTab.R"), local = TRUE)
+source(paste0(UICompDirectory, "AssignmentView.R"), local = TRUE)
 source(paste0(UICompDirectory, "Monika.R"), local = TRUE)
 source(paste0(UICompDirectory, "Nikita.R"), local = TRUE)
 source(paste0(UICompDirectory, "Matt.R"), local = TRUE)
@@ -21,6 +22,7 @@ shinyUI(
             navbarPage("",
                        AnalysisTab,
                        ConfigTab,
+                       AssignmentView,
                        Monika,
                        Nikita,
                        Matt
