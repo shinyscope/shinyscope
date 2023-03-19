@@ -85,22 +85,7 @@ shinyServer(function(input, output, session) {
     updateSelectizeInput(session, "cols", choices =  numeric_cols) # all columns: updateSelectizeInput(session, "cols", choices = colnames(data()))
   })
   #####------------------------select columns & calculate the mean------------------------##### 
- 
-
-   ## create dropdown for all assignments only in NIKITA
-   observe({
-     assignments <- assignments()
-     assignments <- assignments %>%
-       filter(!str_detect(colnames, "Name|Sections|Max|Time|Late"))
-     updateSelectizeInput(session, "assign_niki", choices = assignments$colnames) #make dropdown of assignments
-   })
    
-   ## update categories
-   observe({
-     categories <- categories()
-     updateSelectizeInput(session, "cat_niki", choices = categories$Categories) #make dropdown of assignments
-     
-   })
    
   #it seems to calculate the mean correctly
   
@@ -138,19 +123,19 @@ shinyServer(function(input, output, session) {
       write.csv(result(), file, row.names = FALSE)
     })
   
-  categories <- reactive({
-    num <- input$num_cat
-    Categories <- sprintf("Category %d",1:num)
-    cat_table <- data.frame(Categories) %>%
-      mutate(Weights = 0) %>%
-      mutate(Assignments_Included = "")
-  })
-  
-
-  output$cat_table <- renderDataTable({
-    categories <- categories()
-    updateCategories(categories, input$cat_niki, input$assign_niki, input$weight)
-  })
+  # categories <- reactive({
+  #   num <- input$num_cat
+  #   Categories <- sprintf("Category %d",1:num)
+  #   cat_table <- data.frame(Categories) %>%
+  #     mutate(Weights = 0) %>%
+  #     mutate(Assignments_Included = "")
+  # })
+  # 
+  # 
+  # output$cat_table <- renderDataTable({
+  #   categories <- categories()
+  #   updateCategories(categories, input$num_cat, input$assign_niki, input$weight)
+  # })
   
   
   
@@ -196,6 +181,58 @@ shinyServer(function(input, output, session) {
           "✔ ", sid_nas, "SID numbers are missing.")
   })
   
+  #####------------------------Assignment View------------------------#####
   
+  categories <- reactiveValues(cat_table = NULL)
+  
+  observeEvent(input$create, {
+    assignments <- ""
+    for(x in 1: length(input$assign_niki)){
+      assignments <- paste(assignments, input$assign_niki[x])
+    }
+    
+    new_row <- c(input$cat_name, input$weight, assignments)
+    
+    if (is.null(categories$cat_table)){
+      categories$cat_table <- data.frame(matrix(ncol = 3, nrow = 1)) %>%
+        rename(Categories = "X1", Type = "X2", Assignments_Included = "X3")
+      categories$cat_table[1,1] <- input$cat_name
+      categories$cat_table[1,2] <- input$weight
+      categories$cat_table[1,3] <- assignments
+    } else {
+      categories$cat_table <- rbind(categories$cat_table, new_row)
+    }
+   
+  })
+  
+  output$cat_table <- renderDataTable({ categories$cat_table})
+  
+  
+  unassigned <- reactiveValues(unassigned_table = NULL)
+  
+  observe({
+    unassigned$unassigned_table <- data.frame(assignments()) %>%
+      select(colnames) %>%
+      filter(!str_detect(colnames, "Name|Sections|Max|Time|Late|Email|SID")) %>%
+      rename(Unassigned_Assignments = "colnames")
+  })
+  
+  output$leftover <- renderDataTable({unassigned$unassigned_table})
+  
+  ## create dropdown for all assignments only in NIKITA
+  observe({
+    updateSelectizeInput(session, "assign_niki", choices = unassigned$unassigned_table) #make dropdown of assignments
+  })
+  
+  observeEvent(input$edit, {
+    showModal(modal_confirm)
+    updateSelectizeInput(session, "change_assign", choices = unassigned$unassigned_table) #make dropdown of assignments
+  })
+  
+  observeEvent(input$done, {
+    categories$cat_table <- updateRow(categories$cat_table, input$nRow, input$change_name, input$change_weight, input$change_assign)
+  # unassigned$unassigned_table <- removeAssigned(unassigned$unassigned_table, input$change_name)
+    removeModal()
+  })
   
 })
