@@ -5,6 +5,8 @@ HSLocation <- "helperScripts/"
 source(paste0(HSLocation, "ShinyServerFunctions.R"))
 source(paste0(HSLocation, "AssignmentTable.R"))
 source(paste0(HSLocation, "Pivot.R"))
+source(paste0(HSLocation, "StudentView.R"))
+
 
 shinyServer(function(input, output, session) {
   
@@ -26,7 +28,7 @@ shinyServer(function(input, output, session) {
       return("Upload some data first")
     }
     else{
-    read.table(input$upload$datapath, sep = ",", header = TRUE)
+    read.table(input$upload$datapath, sep = ",", header = TRUE, fill=TRUE)
     }
       })
   
@@ -149,6 +151,51 @@ shinyServer(function(input, output, session) {
     categories <- categories()
     updateCategories(categories, input$cat_niki, input$assign_niki, input$weight)
   })
+  
+  
+  
+  #####------------------------StudentView functions------------------------#####
+  sids <- reactive({
+    new_data <- new_data()
+      studentview(new_data)
+    })
+
+  output$students <- renderDataTable({
+      sid_df <- sids()
+      sid_df %>% select(names, sid, email, sections)
+    })
+
+  duplicate_sids_df <- reactive({
+    new_data <- new_data()
+    duplicates(new_data)
+  })
+
+  output$duplicate_sids <- renderDataTable({
+    dup_df <- duplicate_sids_df()
+    dup_df %>% select(names, sid, email, sections)
+  })
+  
+  
+  #####------------------------Student View - Summaries------------------------#####
+  output$num_students_msg <- renderText({
+    sids <- sids()
+    num_rows <- nrow(sids)
+    paste("✔ ", num_rows, "students were imported.")
+  })
+
+  output$num_assign_msg <- renderText({
+    assignments <- assignments()
+    num_rows <- (nrow(assignments) - 4)
+    paste("✔ ", num_rows, "assignments were imported.")
+  })
+  output$duplicates_msg <- renderText({
+    dup_df <- duplicate_sids_df()
+    num_duplicate <- dup_df %>% distinct(sid) %>% nrow()
+    sid_nas <- sum(is.na(dup_df$sid))
+    paste("✔ ", num_duplicate, "duplicates of SIDs were merged,",
+          "✔ ", sid_nas, "SID numbers are missing.")
+  })
+  
   
   
 })

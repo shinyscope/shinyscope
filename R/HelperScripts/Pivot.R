@@ -1,6 +1,5 @@
 pivot <- function(new_data){
-  print(new_data)
-  id_cols <- c("name", "sections")
+  id_cols <- c("names", "sections","email", "sid")
 
   
   sxa <- new_data %>%
