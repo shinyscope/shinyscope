@@ -14,6 +14,7 @@ AssignmentView <- tabPanel("Assignment View", titlePanel("Assignment View"),
                  mainPanel(
                    h4("Grading Syllabus"),
                    dataTableOutput("cat_table"),
+                   h4("Unassigned Assignments Below:"),
                    dataTableOutput("leftover")
                  )
 )

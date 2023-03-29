@@ -175,39 +175,42 @@ shinyServer(function(input, output, session) {
     categories$cat_table <- updateCategoryTable(input$assign, categories$cat_table, input$cat_name, input$weight)
     updateTextInput(session, "assign", value = "")
     updateTextInput(session, "cat_name", value = "")
+    assigns$table <- updateCategory(assigns$table, input$assign, input$cat_name)
   })
   
   # renders table of categories with respective assignments and weights
   output$cat_table <- renderDataTable({ datatable(categories$cat_table, editable = TRUE)})
   
   #reactive unassigned assignments table
-  unassigned <- reactiveValues(unassigned_table = NULL)
+  assigns <- reactiveValues(table = NULL)
   
   # creates unassigned assignments table
   observe({
-    unassigned$unassigned_table <- data.frame(assignments()) %>%
-      select(colnames) %>%
-      filter(!str_detect(colnames, "Name|Sections|Max|Time|Late|Email|SID")) %>%
-      rename(Unassigned_Assignments = "colnames")
+    assigns$table <- data.frame(assignments()) %>%
+      filter(!str_detect(colnames, "Name|Sections|Max|Time|Late|Email|SID"))
   })
   
-  output$leftover <- renderDataTable({unassigned$unassigned_table})
+  output$leftover <- renderDataTable({
+    assigns$table %>% 
+      filter(category == "Unassigned") %>%
+      select(colnames, category)})
   
   ## create dropdown for all assignments
   observe({
-    updateSelectizeInput(session, "assign", choices = unassigned$unassigned_table) 
+    updateSelectizeInput(session, "assign", choices = assigns$table$colnames) 
   })
   
   # modal opens when Edit button pressed
   observeEvent(input$edit, {
     showModal(modal_confirm)
-    updateSelectizeInput(session, "change_assign", choices = unassigned$unassigned_table) #make dropdown of assignments
+    updateSelectizeInput(session, "change_assign", choices = assigns$table$colnames) #make dropdown of assignments
   })
   
   # modal closes when Done button pressed, categories are updated
   observeEvent(input$done, {
     categories$cat_table <- updateRow(categories$cat_table, input$nRow, input$change_name, input$change_weight, input$change_assign)
     removeModal()
+    assigns$table <- updateCategory(assigns$table, input$change_assign, input$change_name)
   })
   
   
