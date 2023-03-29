@@ -123,20 +123,6 @@ shinyServer(function(input, output, session) {
       write.csv(result(), file, row.names = FALSE)
     })
   
-  # categories <- reactive({
-  #   num <- input$num_cat
-  #   Categories <- sprintf("Category %d",1:num)
-  #   cat_table <- data.frame(Categories) %>%
-  #     mutate(Weights = 0) %>%
-  #     mutate(Assignments_Included = "")
-  # })
-  # 
-  # 
-  # output$cat_table <- renderDataTable({
-  #   categories <- categories()
-  #   updateCategories(categories, input$num_cat, input$assign, input$weight)
-  # })
-  
   
   
   #####------------------------StudentView functions------------------------#####
@@ -186,27 +172,9 @@ shinyServer(function(input, output, session) {
   categories <- reactiveValues(cat_table = NULL)
   
   observeEvent(input$create, {
-    assignments <- ""
-    for(x in 1: length(input$assign)){
-      assignments <- paste(assignments, input$assign[x], sep = ", ")
-      updateTextInput(session, "assign", value = "")
-      updateTextInput(session, "cat_name", value = "")
-      #updateSliderInput(session, "weight", )
-    } # creates string of assignments
-    
-    new_row <- c(input$cat_name, input$weight, assignments)
-    
-    # updates category table with new row with new name, weights, assignments
-    if (is.null(categories$cat_table)){
-      categories$cat_table <- data.frame(matrix(ncol = 3, nrow = 1)) %>%
-        rename(Categories = "X1", Weights = "X2", Assignments_Included = "X3")
-      categories$cat_table[1,1] <- input$cat_name
-      categories$cat_table[1,2] <- input$weight
-      categories$cat_table[1,3] <- assignments
-    } else {
-      categories$cat_table <- rbind(categories$cat_table, new_row)
-    }
-   
+    categories$cat_table <- updateCategoryTable(input$assign, categories$cat_table, input$cat_name, input$weight)
+    updateTextInput(session, "assign", value = "")
+    updateTextInput(session, "cat_name", value = "")
   })
   
   # renders table of categories with respective assignments and weights
@@ -225,13 +193,11 @@ shinyServer(function(input, output, session) {
   
   output$leftover <- renderDataTable({unassigned$unassigned_table})
   
-  ## create dropdown for all assignments only in NIKITA
+  ## create dropdown for all assignments
   observe({
-    updateSelectizeInput(session, "assign", choices = unassigned$unassigned_table) #make dropdown of assignments
-    
+    updateSelectizeInput(session, "assign", choices = unassigned$unassigned_table) 
   })
   
-  output$test <- renderDataTable(({removeAssigned(input$assign)}))
   # modal opens when Edit button pressed
   observeEvent(input$edit, {
     showModal(modal_confirm)

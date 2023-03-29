@@ -1,3 +1,19 @@
+updateCategoryTable <- function(assign, cat_table, cat_name, weight){
+  assignments <- stringr::str_c(assign, collapse = ", ") # creates string of assignments
+  
+  if (is.null(cat_table)){
+    cat_table <- data.frame(matrix(ncol = 3, nrow = 1)) %>%
+      rename(Categories = "X1", Weights = "X2", Assignments_Included = "X3")
+      cat_table[1,1] <- cat_name
+      cat_table[1,2] <- weight
+      cat_table[1,3] <- assignments
+  } else {
+      cat_table <- rbind(cat_table, c(cat_name, weight, assignments))
+  }
+  return (cat_table)
+}
+
+
 createAssignTable <- function(data) {
   gs_cols <- names(data)
   
