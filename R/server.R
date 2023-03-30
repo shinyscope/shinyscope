@@ -133,7 +133,7 @@ shinyServer(function(input, output, session) {
 
   output$students <- renderDataTable({
       sid_df <- sids()
-      sid_df %>% select(names, sid, email, sections)
+  #    sid_df %>% select(names, sid, email, sections)
     })
 
   duplicate_sids_df <- reactive({
@@ -143,29 +143,58 @@ shinyServer(function(input, output, session) {
 
   output$duplicate_sids <- renderDataTable({
     dup_df <- duplicate_sids_df()
-    dup_df %>% select(names, sid, email, sections)
+  #  dup_df %>% select(names, sid, email, sections)
   })
   
   
   #####------------------------Student View - Summaries------------------------#####
+  # 
+  # output$num_students_msg <- renderText({
+  #   sids <- sids()
+  #   num_rows <- nrow(sids)
+  #   paste0('<span style="color: green; font-weight: bold;">✔</span> ', num_rows, ' students were imported.')
+  # })
+  # 
+  # output$num_assign_msg <- renderText({
+  #   assignments <- assignments()
+  #   num_rows <- (nrow(assignments) - 4)
+  #   paste0('<span style="color: green; font-weight: bold;">✔</span> ', num_rows, ' assignments were imported.')
+  # })
+  # 
+  # output$duplicates_msg <- renderText({
+  #   dup_df <- duplicate_sids_df()
+  #   num_duplicate <- dup_df %>% distinct(sid) %>% nrow()
+  #   sid_nas <- sum(is.na(dup_df$sid))
+  #   paste0('<span style="color: green; font-weight: bold;">✔</span> ', num_duplicate, ' duplicates of SIDs were merged. <br>',
+  #          '<span style="color: green; font-weight: bold;">✔</span> ', sid_nas, ' SID numbers are missing.')
+  # })
+  # 
+  # 
+  
+  
   output$num_students_msg <- renderText({
     sids <- sids()
     num_rows <- nrow(sids)
-    paste("✔ ", num_rows, "students were imported.")
+    paste0('<div class="alert alert-success" role="alert"><i class="fas fa-check-circle"></i> ', num_rows, ' students were imported.</div>')
   })
-
+  
   output$num_assign_msg <- renderText({
     assignments <- assignments()
     num_rows <- (nrow(assignments) - 4)
-    paste("✔ ", num_rows, "assignments were imported.")
+    paste0('<div class="alert alert-success" role="alert"><i class="fas fa-check-circle"></i> ', num_rows, ' assignments were imported.</div>')
   })
+  
   output$duplicates_msg <- renderText({
     dup_df <- duplicate_sids_df()
     num_duplicate <- dup_df %>% distinct(sid) %>% nrow()
     sid_nas <- sum(is.na(dup_df$sid))
-    paste("✔ ", num_duplicate, "duplicates of SIDs were merged,",
-          "✔ ", sid_nas, "SID numbers are missing.")
+    paste0('<div class="alert alert-warning" role="alert"><i class="fas fa-exclamation-triangle"></i> ', num_duplicate, ' duplicates of SIDs were merged. <br>',
+           '<i class="fas fa-exclamation-triangle"></i> ', sid_nas, ' SID numbers are missing.</div>')
   })
+  
+  
+  
+  
   
   #####------------------------Assignment View------------------------#####
   

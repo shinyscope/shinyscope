@@ -4,7 +4,18 @@ studentview <- function(new_data) {
   if (length(unique(new_data$sid)) < nrow(new_data)) {
     data_uniquesids <- new_data %>%
       group_by(sid) %>%
-      summarize_all(funs(max)) %>%
+      summarize(across(
+        everything(),
+        ~ if (is.numeric(.)) {
+          max(., na.rm = TRUE)
+        } else {
+          if (all(is.na(.))) {
+            NA
+          } else {
+            last(na.omit(.))
+          }
+        }
+      )) %>%
       ungroup()%>%
     
     
