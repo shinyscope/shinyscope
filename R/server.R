@@ -40,7 +40,8 @@ shinyServer(function(input, output, session) {
   })
   #####------------------------creates a table of the assignments------------------------#####
   output$assign <- renderDataTable({
-    assignments()
+   # assignments()
+    assigns$table
 })
   
   #####------------------------takes the new colnames and replaces original colnames--#####
@@ -226,7 +227,10 @@ shinyServer(function(input, output, session) {
   
   ## create dropdown for all assignments
   observe({
-    updateSelectizeInput(session, "assign", choices = assigns$table$colnames) 
+    choices <- assigns$table$colnames
+    if (!is.null(assigns$table))
+    {choices <- assigns$table %>% filter (category == "Unassigned") %>% select(colnames)} 
+    updateSelectizeInput(session, "assign", choices = choices) 
   })
   
   # modal opens when Edit button pressed
