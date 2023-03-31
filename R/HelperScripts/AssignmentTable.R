@@ -31,6 +31,6 @@ createAssignTable <- function(data) {
 updateCategory <- function(assignments, assign, cat_name){
   selected <- data.frame(colnames = assign)
   selected <- semi_join(assignments, selected, "colnames") %>% mutate(category = cat_name)
-  assignments <- rbind(semi_join(selected, assignments, "colnames"), anti_join(assignments, selected, "colnames"))
+  assignments <- rbind(selected, anti_join(assignments, selected, "colnames"))
   return (assignments)
 }

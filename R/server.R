@@ -41,7 +41,7 @@ shinyServer(function(input, output, session) {
   #####------------------------creates a table of the assignments------------------------#####
   output$assign <- renderDataTable({
    # assignments()
-    assigns$table
+    assigns$table #reactiveValue table from Assignment View tab
 })
   
   #####------------------------takes the new colnames and replaces original colnames--#####
@@ -209,7 +209,7 @@ shinyServer(function(input, output, session) {
   })
   
   # renders table of categories with respective assignments and weights
-  output$cat_table <- renderDataTable({ datatable(categories$cat_table, editable = TRUE)})
+  output$cat_table <- renderDataTable({ datatable(categories$cat_table)})
   
   #reactive unassigned assignments table
   assigns <- reactiveValues(table = NULL)
