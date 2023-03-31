@@ -180,8 +180,8 @@ shinyServer(function(input, output, session) {
   })
   
   output$num_assign_msg <- renderText({
-    assignments <- assignments()
-    num_rows <- (nrow(assignments) - 4)
+    #assignments <- assignments()
+    num_rows <- (nrow(assigns$table))
     paste0('<div class="alert alert-success" role="alert"><i class="fas fa-check-circle"></i> ', num_rows, ' assignments were imported.</div>')
   })
   
