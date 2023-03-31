@@ -187,7 +187,7 @@ shinyServer(function(input, output, session) {
   
   output$duplicates_msg <- renderText({
     dup_df <- duplicate_sids_df()
-    num_duplicate <- dup_df %>% distinct(sid) %>% nrow()
+    num_duplicate <- dup_df %>% drop_na(sid)%>% distinct(sid) %>% nrow()
     sid_nas <- sum(is.na(dup_df$sid))
     paste0('<div class="alert alert-warning" role="alert"><i class="fas fa-exclamation-triangle"></i> ', num_duplicate, ' duplicates of SIDs were merged. <br>',
            '<i class="fas fa-exclamation-triangle"></i> ', sid_nas, ' SID numbers are missing.</div>')
