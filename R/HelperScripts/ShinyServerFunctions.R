@@ -16,28 +16,11 @@ modal_confirm <- modalDialog(
 )
 
 updateRow <- function(cat_table, row, name, weight, assignments){
-  assign <- ""
   if (!is.null(cat_table) && row <= nrow(cat_table)){
-    for(x in 1: length(assignments)){
-      assign <- paste(assign, assignments[x])
-    }
-
-    
     cat_table[row, 1] <- name
     cat_table[row, 2] <- weight
-    cat_table[row, 3] <- assign
+    cat_table[row, 3] <- stringr::str_c(assignments, collapse = ", ")
   }
   
   return (cat_table)
-}
-
-removeAssigned <- function(assignments){
-  len <- length(assignments)
-  new_table <- data.frame(c(len, len, len))
-  # for (x in 1: len){
-  #   assign <- assignments[x]
-  #   num <- which(unassigned_table[,1] == assign)
-  #   new_table[x] <- num
-  # }
-  return (new_table)
 }

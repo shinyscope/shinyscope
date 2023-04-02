@@ -40,7 +40,8 @@ shinyServer(function(input, output, session) {
   })
   #####------------------------creates a table of the assignments------------------------#####
   output$assign <- renderDataTable({
-    assignments()
+   # assignments()
+    assigns$table #reactiveValue table from Assignment View tab
 })
   
   #####------------------------takes the new colnames and replaces original colnames--#####
@@ -123,20 +124,6 @@ shinyServer(function(input, output, session) {
       write.csv(result(), file, row.names = FALSE)
     })
   
-  # categories <- reactive({
-  #   num <- input$num_cat
-  #   Categories <- sprintf("Category %d",1:num)
-  #   cat_table <- data.frame(Categories) %>%
-  #     mutate(Weights = 0) %>%
-  #     mutate(Assignments_Included = "")
-  # })
-  # 
-  # 
-  # output$cat_table <- renderDataTable({
-  #   categories <- categories()
-  #   updateCategories(categories, input$num_cat, input$assign, input$weight)
-  # })
-  
   
   
   #####------------------------StudentView functions------------------------#####
@@ -147,7 +134,7 @@ shinyServer(function(input, output, session) {
 
   output$students <- renderDataTable({
       sid_df <- sids()
-      sid_df %>% select(names, sid, email, sections)
+  #    sid_df %>% select(names, sid, email, sections)
     })
 
   duplicate_sids_df <- reactive({
@@ -157,29 +144,58 @@ shinyServer(function(input, output, session) {
 
   output$duplicate_sids <- renderDataTable({
     dup_df <- duplicate_sids_df()
-    dup_df %>% select(names, sid, email, sections)
+  #  dup_df %>% select(names, sid, email, sections)
   })
   
   
   #####------------------------Student View - Summaries------------------------#####
+  # 
+  # output$num_students_msg <- renderText({
+  #   sids <- sids()
+  #   num_rows <- nrow(sids)
+  #   paste0('<span style="color: green; font-weight: bold;">✔</span> ', num_rows, ' students were imported.')
+  # })
+  # 
+  # output$num_assign_msg <- renderText({
+  #   assignments <- assignments()
+  #   num_rows <- (nrow(assignments) - 4)
+  #   paste0('<span style="color: green; font-weight: bold;">✔</span> ', num_rows, ' assignments were imported.')
+  # })
+  # 
+  # output$duplicates_msg <- renderText({
+  #   dup_df <- duplicate_sids_df()
+  #   num_duplicate <- dup_df %>% distinct(sid) %>% nrow()
+  #   sid_nas <- sum(is.na(dup_df$sid))
+  #   paste0('<span style="color: green; font-weight: bold;">✔</span> ', num_duplicate, ' duplicates of SIDs were merged. <br>',
+  #          '<span style="color: green; font-weight: bold;">✔</span> ', sid_nas, ' SID numbers are missing.')
+  # })
+  # 
+  # 
+  
+  
   output$num_students_msg <- renderText({
     sids <- sids()
     num_rows <- nrow(sids)
-    paste("✔ ", num_rows, "students were imported.")
+    paste0('<div class="alert alert-success" role="alert"><i class="fas fa-check-circle"></i> ', num_rows, ' students were imported.</div>')
   })
-
+  
   output$num_assign_msg <- renderText({
-    assignments <- assignments()
-    num_rows <- (nrow(assignments) - 4)
-    paste("✔ ", num_rows, "assignments were imported.")
+    #assignments <- assignments()
+    num_rows <- (nrow(assigns$table))
+    paste0('<div class="alert alert-success" role="alert"><i class="fas fa-check-circle"></i> ', num_rows, ' assignments were imported.</div>')
   })
+  
   output$duplicates_msg <- renderText({
     dup_df <- duplicate_sids_df()
-    num_duplicate <- dup_df %>% distinct(sid) %>% nrow()
+    num_duplicate <- dup_df %>% drop_na(sid)%>% distinct(sid) %>% nrow()
     sid_nas <- sum(is.na(dup_df$sid))
-    paste("✔ ", num_duplicate, "duplicates of SIDs were merged,",
-          "✔ ", sid_nas, "SID numbers are missing.")
+    paste0('<div class="alert alert-warning" role="alert"><i class="fas fa-exclamation-triangle"></i> ', num_duplicate, ' duplicates of SIDs were merged. <br>',
+           '<i class="fas fa-exclamation-triangle"></i> ', sid_nas, ' SID numbers are missing.</div>')
   })
+  
+  
+  
+  
   
   #####------------------------Assignment View------------------------#####
   
@@ -202,42 +218,44 @@ shinyServer(function(input, output, session) {
     } else {
       categories$cat_table <- rbind(categories$cat_table, new_row)
     }
-   
   })
   
   # renders table of categories with respective assignments and weights
-  output$cat_table <- renderDataTable({ datatable(categories$cat_table, editable = TRUE)})
+  output$cat_table <- renderDataTable({ datatable(categories$cat_table)})
   
   #reactive unassigned assignments table
-  unassigned <- reactiveValues(unassigned_table = NULL)
+  assigns <- reactiveValues(table = NULL)
   
   # creates unassigned assignments table
   observe({
-    unassigned$unassigned_table <- data.frame(assignments()) %>%
-      select(colnames) %>%
-      filter(!str_detect(colnames, "Name|Sections|Max|Time|Late|Email|SID")) %>%
-      rename(Unassigned_Assignments = "colnames")
+    assigns$table <- data.frame(assignments()) %>%
+      filter(!str_detect(colnames, "Name|Sections|Max|Time|Late|Email|SID"))
   })
   
-  output$leftover <- renderDataTable({unassigned$unassigned_table})
+  output$leftover <- renderDataTable({
+    assigns$table %>% 
+      filter(category == "Unassigned") %>%
+      select(colnames, category)})
   
-  ## create dropdown for all assignments only in NIKITA
+  ## create dropdown for all assignments
   observe({
-    updateSelectizeInput(session, "assign", choices = unassigned$unassigned_table) #make dropdown of assignments
-    
+    choices <- assigns$table$colnames
+    if (!is.null(assigns$table))
+    {choices <- assigns$table %>% filter (category == "Unassigned") %>% select(colnames)} 
+    updateSelectizeInput(session, "assign", choices = choices) 
   })
   
-  output$test <- renderDataTable(({removeAssigned(input$assign)}))
   # modal opens when Edit button pressed
   observeEvent(input$edit, {
     showModal(modal_confirm)
-    updateSelectizeInput(session, "change_assign", choices = unassigned$unassigned_table) #make dropdown of assignments
+    updateSelectizeInput(session, "change_assign", choices = assigns$table$colnames) #make dropdown of assignments
   })
   
   # modal closes when Done button pressed, categories are updated
   observeEvent(input$done, {
     categories$cat_table <- updateRow(categories$cat_table, input$nRow, input$change_name, input$change_weight, input$change_assign)
     removeModal()
+    assigns$table <- updateCategory(assigns$table, input$change_assign, input$change_name)
   })
   
   
