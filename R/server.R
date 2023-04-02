@@ -144,30 +144,6 @@ shinyServer(function(input, output, session) {
   
   
   #####------------------------Student View - Summaries------------------------#####
-  # 
-  # output$num_students_msg <- renderText({
-  #   sids <- sids()
-  #   num_rows <- nrow(sids)
-  #   paste0('<span style="color: green; font-weight: bold;">✔</span> ', num_rows, ' students were imported.')
-  # })
-  # 
-  # output$num_assign_msg <- renderText({
-  #   assignments <- assignments()
-  #   num_rows <- (nrow(assignments) - 4)
-  #   paste0('<span style="color: green; font-weight: bold;">✔</span> ', num_rows, ' assignments were imported.')
-  # })
-  # 
-  # output$duplicates_msg <- renderText({
-  #   dup_df <- duplicate_sids_df()
-  #   num_duplicate <- dup_df %>% distinct(sid) %>% nrow()
-  #   sid_nas <- sum(is.na(dup_df$sid))
-  #   paste0('<span style="color: green; font-weight: bold;">✔</span> ', num_duplicate, ' duplicates of SIDs were merged. <br>',
-  #          '<span style="color: green; font-weight: bold;">✔</span> ', sid_nas, ' SID numbers are missing.')
-  # })
-  # 
-  # 
-  
-  
   output$num_students_msg <- renderText({
     sids <- processed_sids()$unique_sids
     num_rows <- nrow(sids)
@@ -188,10 +164,7 @@ shinyServer(function(input, output, session) {
            '<i class="fas fa-exclamation-triangle"></i> ', sid_nas, ' SID numbers are missing.</div>')
   })
   
-  
-  
-  
-  
+
   #####------------------------Assignment View------------------------#####
   
   categories <- reactiveValues(cat_table = NULL)
