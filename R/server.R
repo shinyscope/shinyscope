@@ -186,13 +186,9 @@ shinyServer(function(input, output, session) {
   categories <- reactiveValues(cat_table = NULL)
   
   observeEvent(input$create, {
-    assignments <- ""
-    for(x in 1: length(input$assign)){
-      assignments <- paste(assignments, input$assign[x], sep = ", ")
-      updateTextInput(session, "assign", value = "")
-      updateTextInput(session, "cat_name", value = "")
-      #updateSliderInput(session, "weight", )
-    } # creates string of assignments
+    assignments <- str_flatten(input$assign, collapse = ", ")
+    updateTextInput(session, "assign", value = "")
+    updateTextInput(session, "cat_name", value = "")
     
     new_row <- c(input$cat_name, input$weight, assignments)
     
