@@ -5,7 +5,7 @@ HSLocation <- "helperScripts/"
 source(paste0(HSLocation, "ShinyServerFunctions.R"))
 source(paste0(HSLocation, "AssignmentTable.R"))
 source(paste0(HSLocation, "Pivot.R"))
-source(paste0(HSLocation, "StudentView.R"))
+source(paste0(HSLocation, "ProcessSid.R"))
 
 
 shinyServer(function(input, output, session) {
@@ -127,25 +127,20 @@ shinyServer(function(input, output, session) {
   
   
   #####------------------------StudentView functions------------------------#####
-  sids <- reactive({
+  processed_sids <- reactive({
     new_data <- new_data()
-      studentview(new_data)
-    })
-
+    process_sids(new_data)
+   })
+   
   output$students <- renderDataTable({
-      sid_df <- sids()
-  #    sid_df %>% select(names, sid, email, sections)
-    })
-
-  duplicate_sids_df <- reactive({
-    new_data <- new_data()
-    duplicates(new_data)
-  })
-
+    sid_df <- processed_sids()$unique_sids
+    sid_df %>% select(names, sid, email, sections)
+   })
+   
   output$duplicate_sids <- renderDataTable({
-    dup_df <- duplicate_sids_df()
-  #  dup_df %>% select(names, sid, email, sections)
-  })
+    dup_df <- processed_sids()$duplicates
+    dup_df %>% select(names, sid, email, sections)
+   })
   
   
   #####------------------------Student View - Summaries------------------------#####
@@ -174,7 +169,7 @@ shinyServer(function(input, output, session) {
   
   
   output$num_students_msg <- renderText({
-    sids <- sids()
+    sids <- processed_sids()$unique_sids
     num_rows <- nrow(sids)
     paste0('<div class="alert alert-success" role="alert"><i class="fas fa-check-circle"></i> ', num_rows, ' students were imported.</div>')
   })
@@ -186,7 +181,7 @@ shinyServer(function(input, output, session) {
   })
   
   output$duplicates_msg <- renderText({
-    dup_df <- duplicate_sids_df()
+    dup_df <- processed_sids()$duplicates
     num_duplicate <- dup_df %>% drop_na(sid)%>% distinct(sid) %>% nrow()
     sid_nas <- sum(is.na(dup_df$sid))
     paste0('<div class="alert alert-warning" role="alert"><i class="fas fa-exclamation-triangle"></i> ', num_duplicate, ' duplicates of SIDs were merged. <br>',
