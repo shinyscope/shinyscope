@@ -3,11 +3,11 @@ dynamic_ui_categories <- function(categories_table){
  
   #Create UI elements for each row in the datatable
   lapply(1:nrow(categories_table), function(i){
-    category <- categories_table[,1]
-    weight <- categories_table[,2]
-    assignments <- categories_table[,3]
-    drops <- categories_table[,4]
-    grading_policy <- categories_table[,5]
+    category <- categories_table[i,1]
+    weight <- categories_table[i,2]
+    assignments <- categories_table[i,3]
+    drops <- categories_table[i,4]
+    grading_policy <- categories_table[i,5]
 
     category_html <- paste0(
       '<div class="alert alert-success" role="alert">',
