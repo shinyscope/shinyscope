@@ -5,13 +5,14 @@ modal_confirm <- modalDialog(
   "Are you sure you want to continue?",
   title = "Deleting files",
   footer = tagList(
-    numericInput("nRow", "Enter Category Row:", 1, step = 1),
+    numericInput("nRow", "Enter Category Row:", 1, min = 1, step = 1),
     textInput("change_name", "Enter Category Name", value = "", width = NULL, placeholder = NULL),
     sliderInput("change_weight", "What Weight?", min = 0, max = 1, value = 0),
     selectizeInput("change_assign", "Select Assignments:",
                    choices = '',
                    multiple = TRUE),
-    actionButton("done", "Done")
+    actionButton("cancel", "Cancel"),
+    actionButton("done", "Done"),
   )
 )
 

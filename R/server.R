@@ -170,22 +170,12 @@ shinyServer(function(input, output, session) {
   categories <- reactiveValues(cat_table = NULL)
   
   observeEvent(input$create, {
-    assignments <- str_flatten(input$assign, collapse = ", ")
     updateTextInput(session, "assign", value = "")
     updateTextInput(session, "cat_name", value = "")
     
-    new_row <- c(input$cat_name, input$weight, assignments)
-    
     # updates category table with new row with new name, weights, assignments
-    if (is.null(categories$cat_table)){
-      categories$cat_table <- data.frame(matrix(ncol = 3, nrow = 1)) %>%
-        rename(Categories = "X1", Weights = "X2", Assignments_Included = "X3")
-      categories$cat_table[1,1] <- input$cat_name
-      categories$cat_table[1,2] <- input$weight
-      categories$cat_table[1,3] <- assignments
-    } else {
-      categories$cat_table <- rbind(categories$cat_table, new_row)
-    }
+    categories$cat_table <- updateCategoryTable(input$assign, categories$cat_table, input$cat_name, input$weight)
+    assigns$table <- updateCategory(assigns$table, input$assign, input$cat_name)
   })
   
   # renders table of categories with respective assignments and weights
@@ -216,14 +206,31 @@ shinyServer(function(input, output, session) {
   # modal opens when Edit button pressed
   observeEvent(input$edit, {
     showModal(modal_confirm)
+    num <- input$nRow
+    if (!is.null(categories$cat_table)){
+      updateNumericInput(session, "nRow", max = nrow(categories$cat_table))
+    }
     updateSelectizeInput(session, "change_assign", choices = assigns$table$colnames) #make dropdown of assignments
+  })
+  
+  observeEvent(input$nRow, {
+    num <- input$nRow
+    updateTextInput(session, "change_name", value = categories$cat_table$Categories[num])
+    updateSliderInput(session, "change_weight", value = categories$cat_table$Weights[num])
+  })
+  
+  observeEvent(input$cancel, {
+    removeModal()
   })
   
   # modal closes when Done button pressed, categories are updated
   observeEvent(input$done, {
-    categories$cat_table <- updateRow(categories$cat_table, input$nRow, input$change_name, input$change_weight, input$change_assign)
+    if (!is.null(categories$cat_table)){
+      assigns$table <- changeCategory(assigns$table, categories$cat_table, input$nRow)
+      categories$cat_table <- updateRow(categories$cat_table, input$nRow, input$change_name, input$change_weight, input$change_assign)
+      assigns$table <- updateCategory(assigns$table, input$change_assign, input$change_name)
+    }
     removeModal()
-    assigns$table <- updateCategory(assigns$table, input$change_assign, input$change_name)
   })
   
   

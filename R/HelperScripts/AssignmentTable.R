@@ -34,3 +34,12 @@ updateCategory <- function(assignments, assign, cat_name){
   assignments <- rbind(selected, anti_join(assignments, selected, "colnames"))
   return (assignments)
 }
+
+changeCategory <- function(assignments, cat_table, nrow){
+  original_category <- c(cat_table$Categories[nrow])
+  selected <- assignments %>%
+    filter(category %in% original_category) %>%
+    mutate(category = "Unassigned")
+  assignments <- rbind(selected, anti_join(assignments, selected, "colnames"))
+  return (assignments)
+}
