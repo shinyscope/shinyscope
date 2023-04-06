@@ -18,6 +18,8 @@ AssignmentView <- tabPanel("Assignment View", titlePanel("Assignment View"),
                    h4("Grading Syllabus"),
                    dataTableOutput("cat_table"),
                    h4("Unassigned Assignments Below:"),
-                   uiOutput("myList")
+                   uiOutput("myList"),
+                   h4("Categories Interface"),
+                   uiOutput("dynamic_ui")
                  )
 )

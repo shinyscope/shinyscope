@@ -8,6 +8,7 @@ source(paste0(HSLocation, "AssignmentTable.R"))
 source(paste0(HSLocation, "Pivot.R"))
 source(paste0(HSLocation, "ProcessSid.R"))
 source(paste0(HSLocation, "Grading.R"))
+source(paste0(HSLocation, "Dynamic_UI_Categories.R"))
 
 shinyServer(function(input, output, session) {
   
@@ -252,5 +253,18 @@ shinyServer(function(input, output, session) {
     HTML(markdown::renderMarkdown(text = paste(paste0("- ", getUnassigned(assigns$table), "\n"), collapse = "")
   )))
   
+
+  
+  
+  #####------------------------ DYNAMIC UI FOR DISPLAYING CATEGORIES ------------------------#####
+ 
+  #display dynamic UI
+  output$dynamic_ui <- renderUI({
+    if(!is.null(categories$cat_table)){
+    categories_table <- categories$cat_table
+    dynamic_ui_categories(categories_table)
+    }
+  })
+
   
 })
