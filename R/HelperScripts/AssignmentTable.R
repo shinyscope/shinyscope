@@ -51,3 +51,9 @@ changeCategory <- function(assignments, cat_table, nrow){
   assignments <- rbind(selected, anti_join(assignments, selected, "colnames"))
   return (assignments)
 }
+
+getUnassigned <- function(assign_table){
+  left <-assign_table %>% 
+      filter(category == "Unassigned")
+  left$colnames
+}

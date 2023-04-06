@@ -192,11 +192,6 @@ shinyServer(function(input, output, session) {
     assigns$table <- data.frame(assignments()) %>%
       filter(!str_detect(colnames, "Name|Sections|Max|Time|Late|Email|SID"))
   })
-  #table with all unassigned assignments
-  output$leftover <- renderDataTable({
-    assigns$table %>% 
-      filter(category == "Unassigned") %>%
-      select(colnames, category)})
   
   ## create dropdown for all assignments
   observe({
@@ -244,5 +239,10 @@ shinyServer(function(input, output, session) {
     pivot <- pivotdf()
     calculateGrades(students, pivot, categories$cat_table)
   })
+  
+  output$myList <- renderUI(
+    HTML(markdown::renderMarkdown(text = paste(paste0("- ", getUnassigned(assigns$table), "\n"), collapse = "")
+  )))
+  
   
 })
