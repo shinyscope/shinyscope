@@ -174,8 +174,10 @@ shinyServer(function(input, output, session) {
     updateTextInput(session, "cat_name", value = "")
     
     # updates category table with new row with new name, weights, assignments
-    categories$cat_table <- updateCategoryTable(input$assign, categories$cat_table, input$cat_name, input$weight)
-    assigns$table <- updateCategory(assigns$table, input$assign, input$cat_name)
+    categories$cat_table <- updateCategoryTable(input$assign, categories$cat_table, input$cat_name, input$weight, input$num_drops, input$grading_policy)
+    if (!is.null(input$assign)){
+      assigns$table <- updateCategory(assigns$table, input$assign, input$cat_name)
+      }
   })
   
   # renders table of categories with respective assignments and weights
@@ -227,7 +229,7 @@ shinyServer(function(input, output, session) {
   observeEvent(input$done, {
     if (!is.null(categories$cat_table)){
       assigns$table <- changeCategory(assigns$table, categories$cat_table, input$nRow)
-      categories$cat_table <- updateRow(categories$cat_table, input$nRow, input$change_name, input$change_weight, input$change_assign)
+      categories$cat_table <- updateRow(categories$cat_table, input$nRow, input$change_name, input$change_weight, input$change_assign, input$change_drops, input$change_policy)
       assigns$table <- updateCategory(assigns$table, input$change_assign, input$change_name)
     }
     removeModal()
