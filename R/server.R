@@ -1,12 +1,13 @@
 # load libraries
 
+
 #load helper scripts
 HSLocation <- "helperScripts/"
 source(paste0(HSLocation, "ShinyServerFunctions.R"))
 source(paste0(HSLocation, "AssignmentTable.R"))
 source(paste0(HSLocation, "Pivot.R"))
 source(paste0(HSLocation, "ProcessSid.R"))
-
+source(paste0(HSLocation, "Grading.R"))
 
 shinyServer(function(input, output, session) {
   
@@ -236,6 +237,12 @@ shinyServer(function(input, output, session) {
     removeModal()
   })
   
+  #####------------------------ Grading ------------------------#####
   
+  output$grades <- renderDataTable({
+    students <- processed_sids()$unique_sids %>% select(names)
+    pivot <- pivotdf()
+    calculateGrades(students, pivot, categories$cat_table)
+  })
   
 })

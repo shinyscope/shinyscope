@@ -1,6 +1,7 @@
 Nikita <- tabPanel("Nikita", titlePanel("Assignment View"),
-                   sidebarPanel (
-                     h4("Create a Grade Category:")
-                     
+                   sidebarPanel (),
+                   mainPanel(
+                     h4("Here are your students' grades"),
+                     dataTableOutput("grades")
                    )
 )
