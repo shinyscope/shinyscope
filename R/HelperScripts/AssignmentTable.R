@@ -57,3 +57,17 @@ getUnassigned <- function(assign_table){
       filter(category == "Unassigned")
   left$colnames
 }
+
+deleteRow <- function(cat_table, nrow){
+  len <- nrow(cat_table)
+  if (nrow == 1){
+    cat_table <- tail(cat_table, len-1)
+  } else if(nrow == len) {
+    cat_table <- head(cat_table, len-1)
+  } else if (len == 1){
+    cat_table <- NULL
+  } else {
+    cat_table <- rbind(head(cat_table, nrow-1), tail(cat_table, len-nrow-1)) 
+  }
+  return (cat_table)
+}

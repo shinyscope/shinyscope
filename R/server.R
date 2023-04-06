@@ -201,6 +201,11 @@ shinyServer(function(input, output, session) {
     updateSelectizeInput(session, "assign", choices = choices) 
   })
   
+  observeEvent(input$delete, {
+    assign_table <- changeCategory(assigns$table, categories$cat_table, input$del_row)
+    categories$cat_table <- deleteRow(categories$cat_table, input$del_row)
+  })
+  
   # modal opens when Edit button pressed and updates default settings of input widgets
   observeEvent(input$edit, {
     showModal(modal_confirm)
@@ -227,7 +232,9 @@ shinyServer(function(input, output, session) {
     if (!is.null(categories$cat_table)){
       assigns$table <- changeCategory(assigns$table, categories$cat_table, input$nRow)
       categories$cat_table <- updateRow(categories$cat_table, input$nRow, input$change_name, input$change_weight, input$change_assign, input$change_drops, input$change_policy)
-      assigns$table <- updateCategory(assigns$table, input$change_assign, input$change_name)
+      if (!is.null(input$assign)){
+        assigns$table <- updateCategory(assigns$table, input$change_assign, input$change_name)
+      }
     }
     removeModal()
   })
