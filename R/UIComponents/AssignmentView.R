@@ -16,8 +16,6 @@ AssignmentView <- tabPanel("Assignment View", titlePanel("Assignment View"),
                  ),
                  mainPanel(
                    h4("Grading Syllabus"),
-                   numericInput("del_row", "Delete Row Number:", 0, step = 1),
-                   actionButton("delete", "Delete This Category"),
                    dataTableOutput("cat_table"),
                    h4("Unassigned Assignments Below:"),
                    uiOutput("myList")

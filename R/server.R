@@ -202,8 +202,9 @@ shinyServer(function(input, output, session) {
   })
   
   observeEvent(input$delete, {
-    assign_table <- changeCategory(assigns$table, categories$cat_table, input$del_row)
-    categories$cat_table <- deleteRow(categories$cat_table, input$del_row)
+    assigns$table <- changeCategory(assigns$table, categories$cat_table, input$nRow)
+    categories$cat_table <- deleteRow(categories$cat_table, input$nRow)
+    removeModal()
   })
   
   # modal opens when Edit button pressed and updates default settings of input widgets

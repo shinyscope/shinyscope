@@ -15,6 +15,7 @@ modal_confirm <- modalDialog(
                    choices = '',
                    multiple = TRUE),
     actionButton("cancel", "Cancel"),
+    actionButton("delete", "Delete"),
     actionButton("done", "Done"),
   )
 )

@@ -55,19 +55,25 @@ changeCategory <- function(assignments, cat_table, nrow){
 getUnassigned <- function(assign_table){
   left <-assign_table %>% 
       filter(category == "Unassigned")
-  left$colnames
+  if (!is.null(left$colnames)){
+    return (left$colnames)
+  }
+  return ("All assignments have been assigned.")
 }
 
 deleteRow <- function(cat_table, nrow){
   len <- nrow(cat_table)
-  if (nrow == 1){
-    cat_table <- tail(cat_table, len-1)
-  } else if(nrow == len) {
-    cat_table <- head(cat_table, len-1)
-  } else if (len == 1){
+  if (len == 1){
     cat_table <- NULL
+  } else if(nrow == len) {
+    cat_table <- rbind(NULL,head(cat_table, len-1))
+  } else if (nrow == 1){
+    cat_table <- rbind(NULL,tail(cat_table, len-1))
   } else {
-    cat_table <- rbind(head(cat_table, nrow-1), tail(cat_table, len-nrow-1)) 
+    cat_table <- rbind(head(cat_table, nrow-1), tail(cat_table, len-nrow)) 
+  }
+  if (!is.null(cat_table)){
+    row.names(cat_table) <- 1:nrow(cat_table)
   }
   return (cat_table)
 }
