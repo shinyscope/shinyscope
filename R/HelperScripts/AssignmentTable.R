@@ -1,3 +1,4 @@
+#updates the category table or creates a new one if it's the first row
 updateCategoryTable <- function(assign, cat_table, cat_name, weight, num_drops, grading_policy){
   assignments <- ""
   if (!is.null(assign)){
@@ -18,7 +19,7 @@ updateCategoryTable <- function(assign, cat_table, cat_name, weight, num_drops, 
   return (cat_table)
 }
 
-
+#create assignment table from input data
 createAssignTable <- function(data) {
   gs_cols <- names(data)
   
@@ -33,6 +34,7 @@ createAssignTable <- function(data) {
   return(assignments)
 }
 
+#updates assignments in assignment table when they are assigned a category
 updateCategory <- function(assignments, assign, cat_name){
   selected <- data.frame(colnames = assign)
   selected <- semi_join(assignments, selected, "colnames") %>% mutate(category = cat_name)
@@ -40,6 +42,7 @@ updateCategory <- function(assignments, assign, cat_name){
   return (assignments)
 }
 
+#resets all assignments of a category to "Unassigned"
 changeCategory <- function(assignments, cat_table, nrow){
   original_category <- c(cat_table$Categories[nrow])
   selected <- assignments %>%

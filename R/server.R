@@ -191,7 +191,7 @@ shinyServer(function(input, output, session) {
     assigns$table <- data.frame(assignments()) %>%
       filter(!str_detect(colnames, "Name|Sections|Max|Time|Late|Email|SID"))
   })
-  
+  #table with all unassigned assignments
   output$leftover <- renderDataTable({
     assigns$table %>% 
       filter(category == "Unassigned") %>%
@@ -205,24 +205,25 @@ shinyServer(function(input, output, session) {
     updateSelectizeInput(session, "assign", choices = choices) 
   })
   
-  # modal opens when Edit button pressed
+  # modal opens when Edit button pressed and updates default settings of input widgets
   observeEvent(input$edit, {
     showModal(modal_confirm)
     num <- input$nRow
     if (!is.null(categories$cat_table)){
-      updateNumericInput(session, "nRow", max = nrow(categories$cat_table))
+      updateNumericInput(session, "nRow", max = nrow(categories$cat_table)) 
     }
     updateSelectizeInput(session, "change_assign", choices = assigns$table$colnames) #make dropdown of assignments
   })
   
   observeEvent(input$nRow, {
+    #updates default inputs when picking different rows
     num <- input$nRow
     updateTextInput(session, "change_name", value = categories$cat_table$Categories[num])
     updateSliderInput(session, "change_weight", value = categories$cat_table$Weights[num])
   })
   
   observeEvent(input$cancel, {
-    removeModal()
+    removeModal() #cancel button closes modal without changing anything
   })
   
   # modal closes when Done button pressed, categories are updated
@@ -234,6 +235,7 @@ shinyServer(function(input, output, session) {
     }
     removeModal()
   })
+  
   
   
 })

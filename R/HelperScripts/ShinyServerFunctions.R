@@ -1,6 +1,6 @@
 #This script contains helper Server functions to eliminate clutter in the main Server.R
 #This script is not designed for code reusability like other helper but rather cleaner organization
-
+#UI setup for modal pop-up
 modal_confirm <- modalDialog(
   "Are you sure you want to continue?",
   title = "Deleting files",
@@ -19,6 +19,7 @@ modal_confirm <- modalDialog(
   )
 )
 
+#update a row in category table
 updateRow <- function(cat_table, row, name, weight, assignments,num_drops, grading_policy){
   if (!is.null(cat_table) && row <= nrow(cat_table)){
     cat_table[row, 1] <- name
