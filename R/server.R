@@ -11,7 +11,7 @@ source(paste0(HSLocation, "Grading.R"))
 source(paste0(HSLocation, "Dynamic_UI_Categories.R"))
 
 shinyServer(function(input, output, session) {
-  
+
   #####------------------------uploading a file------------------------#####
   data <- reactive({
     req(input$upload)
@@ -258,6 +258,14 @@ shinyServer(function(input, output, session) {
   
   #####------------------------ DYNAMIC UI FOR DISPLAYING CATEGORIES ------------------------#####
  
+  #display modal for editing existing assignemnt category
+  observeEvent(input$create_category, {
+    showModal(add_new_category_modal)
+  })
+  observeEvent(input$create, {
+    removeModal()
+  })
+    
   #display dynamic UI
   output$dynamic_ui <- renderUI({
     if(!is.null(categories$cat_table)){

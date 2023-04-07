@@ -2,8 +2,8 @@
 #This script is not designed for code reusability like other helper but rather cleaner organization
 #UI setup for modal pop-up
 modal_confirm <- modalDialog(
-  "Are you sure you want to continue?",
-  title = "Deleting files",
+  "Editing already existing assignment type",
+  title = "Edit",
   footer = tagList(
     numericInput("nRow", "Enter Category Row:", 1, min = 1, step = 1),
     textInput("change_name", "Enter Category Name", value = "", width = NULL, placeholder = NULL),
@@ -14,11 +14,16 @@ modal_confirm <- modalDialog(
     selectizeInput("change_assign", "Select Assignments:",
                    choices = '',
                    multiple = TRUE),
-    actionButton("cancel", "Cancel"),
-    actionButton("delete", "Delete"),
-    actionButton("done", "Done"),
+    br(),
+    div(
+      class = "modal-footer",
+      actionButton("cancel", "Cancel"),
+      actionButton("done", "Done")
+    ),
+    actionButton("delete", "Delete", style = "position:absolute; top:25px; right:15px;")
   )
 )
+
 
 #update a row in category table
 updateRow <- function(cat_table, row, name, weight, assignments,num_drops, grading_policy){
@@ -32,3 +37,24 @@ updateRow <- function(cat_table, row, name, weight, assignments,num_drops, gradi
   
   return (cat_table)
 }
+
+
+add_new_category_modal <- modalDialog(
+  "Adding New Assignment Category",
+  title = "Add New",
+  footer = tagList(
+    textInput("cat_name", "Enter Category Name", value = "", width = NULL, placeholder = NULL),
+    sliderInput("weight", "How Much is This Worth?", min = 0, max = 1, value = 0.5),
+    numericInput("num_drops", "How Many Drops:", 0, step = 1),
+    radioButtons("grading_policy", strong("Aggregation Method"),
+                 choices = c("Equally Weighted", "Weighted by Points")),
+    selectizeInput("assign", "Select Assignments:",
+                   choices = '',
+                   multiple = TRUE),
+    br(),
+    div(class = "modal-footer",
+        actionButton("cancel", "Cancel"),
+        actionButton("create", "Save")
+      )
+  
+))
