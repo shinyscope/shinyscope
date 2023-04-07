@@ -193,14 +193,7 @@ shinyServer(function(input, output, session) {
     assigns$table <- data.frame(assignments()) %>%
       filter(!str_detect(colnames, "Name|Sections|Max|Time|Late|Email|SID"))
   })
-  
-  ## create dropdown for all assignments
-  observe({
-    choices <- assigns$table$colnames
-    if (!is.null(assigns$table))
-    {choices <- assigns$table %>% filter (category == "Unassigned") %>% select(colnames)} 
-    updateSelectizeInput(session, "assign", choices = choices) 
-  })
+
   
   observeEvent(input$delete, {
     assigns$table <- changeCategory(assigns$table, categories$cat_table, input$nRow)
@@ -261,6 +254,10 @@ shinyServer(function(input, output, session) {
   #display modal for editing existing assignemnt category
   observeEvent(input$create_category, {
     showModal(add_new_category_modal)
+    choices <- assigns$table$colnames
+    if (!is.null(assigns$table))
+    {choices <- assigns$table %>% filter (category == "Unassigned") %>% select(colnames)} 
+    updateSelectizeInput(session, "assign", choices = choices) 
   })
   observeEvent(input$create, {
     removeModal()
