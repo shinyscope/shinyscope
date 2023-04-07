@@ -1,4 +1,4 @@
-ConfigTab <- tabPanel(
+StudentViewTab <- tabPanel(
   "Student View",
   titlePanel("Student View"),
   

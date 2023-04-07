@@ -1,8 +1,17 @@
-AssignmentView <- tabPanel("Assignment View", titlePanel("Assignment View"),
+AssignmentView <- tabPanel("Configurations", titlePanel("Configurations"),
                  sidebarPanel (
+
+                  # h4("Create a Grade Category"),
+                   helpText("Classify assignment types, implement grading policies, 
+                            determine how to process unusual student records, and set the bins for letter grades.",
+                            br(),
+                            br(),
+                            "Your choices can be saved as a JSON file."),
+                   actionButton("create_caretgory", "Add New Category"),
                    
-                   h4("Create a Grade Category"),
+                   
                    actionButton("edit", "Edit Existing Category"),
+                   
                    textInput("cat_name", "Enter Category Name", value = "", width = NULL, placeholder = NULL),
                    sliderInput("weight", "How Much is This Worth?", min = 0, max = 1, value = 0.5),
                    numericInput("num_drops", "How Many Drops:", 0, step = 1),
@@ -15,11 +24,14 @@ AssignmentView <- tabPanel("Assignment View", titlePanel("Assignment View"),
                   
                  ),
                  mainPanel(
-                   h4("Categories Interface"),
-                   uiOutput("dynamic_ui"),
-                   h4("Unassigned Assignments Below:"),
-                   uiOutput("myList"),
-                   h4("Grading Syllabus"),
-                   dataTableOutput("cat_table")
+                   tabsetPanel(
+                     tabPanel("Assignment View",
+                              h4("New Assignments:"),
+                              uiOutput("myList"),
+                              h4("Existing Categories"),
+                              uiOutput("dynamic_ui")
+                               
+                 )
+                   )
                  )
 )

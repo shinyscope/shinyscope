@@ -9,11 +9,10 @@ library(shinythemes)
 #Create UI Comps
 UICompDirectory <- "UIComponents/"
 source(paste0(UICompDirectory, "AnalysisTab.R"), local = TRUE)
-source(paste0(UICompDirectory, "ConfigTab.R"), local = TRUE)
+source(paste0(UICompDirectory, "StudentViewTab.R"), local = TRUE)
 source(paste0(UICompDirectory, "AssignmentView.R"), local = TRUE)
-source(paste0(UICompDirectory, "Monika.R"), local = TRUE)
-source(paste0(UICompDirectory, "Nikita.R"), local = TRUE)
-source(paste0(UICompDirectory, "Matt.R"), local = TRUE)
+source(paste0(UICompDirectory, "TestingTab.R"), local = TRUE)
+
 
 
 shinyUI(
@@ -21,11 +20,9 @@ shinyUI(
   fluidPage(theme = shinytheme("yeti"),  
             navbarPage("",
                        AnalysisTab,
-                       ConfigTab,
+                       StudentViewTab,
                        AssignmentView,
-                       Monika,
-                       Nikita,
-                       Matt
+                       TestingTab
                 
             )
   ))
