@@ -55,10 +55,10 @@ changeCategory <- function(assignments, cat_table, nrow){
 getUnassigned <- function(assign_table){
   left <-assign_table %>% 
       filter(category == "Unassigned")
-  if (!is.null(left$colnames)){
-    return (left$colnames)
+  if (nrow(left) != 0){
+    return (left$colnames) 
   }
-  return ("All assignments have been assigned.")
+  return ("No more new assignments")
 }
 
 deleteRow <- function(cat_table, nrow){
