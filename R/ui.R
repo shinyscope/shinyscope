@@ -17,11 +17,8 @@ source(paste0(UICompDirectory, "TestingTab.R"), local = TRUE)
 
 shinyUI(
   fluidPage(theme = bs_theme(version = 5, bootswatch = "minty"),
-            navbarPage(title = tags$div(
-              "",
-              tags$span(""),
+            navbarPage(title = "shinyscope",
               tags$div(fileInput("upload", "", accept = c(".csv"))
-                      )
             ),
             AnalysisTab,
             StudentViewTab,
