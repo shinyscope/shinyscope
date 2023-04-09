@@ -19,13 +19,21 @@ shinyUI(
   fluidPage(theme = bs_theme(version = 5, bootswatch = "minty"),
             navbarPage(title = tags$div(
               "",
-              tags$span("", style = "margin-right: 0px;margin-top: -20px; margin-bottom: -20px;"),
-              tags$div(fileInput("upload", "", accept = c(".csv")),
-                       style = "display:inline; width: 20%;margin-top: -20px; margin-bottom: -20px;")
+              tags$span(""),
+              tags$div(fileInput("upload", "", accept = c(".csv"))
+                      )
             ),
             AnalysisTab,
             StudentViewTab,
             AssignmentView,
             TestingTab
-            )
+            ),
+            hr(),
+            br(),
+            br(),
+            tags$div(class="disclaimer", 
+                     tags$style(".center {text-align:center}"),
+                     div(textOutput("disclaimer"), class = "center")),
+            br(),
+            br()
   ))

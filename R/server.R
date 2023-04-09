@@ -11,7 +11,8 @@ source(paste0(HSLocation, "Grading.R"))
 source(paste0(HSLocation, "Dynamic_UI_Categories.R"))
 
 shinyServer(function(input, output, session) {
-
+  
+  
   #####------------------------uploading a file------------------------#####
   data <- reactive({
     req(input$upload)
@@ -272,4 +273,12 @@ shinyServer(function(input, output, session) {
   })
 
   
+  
+  
+  
+  
+  #####------------------------ Disclaimer - FOOTER ------------------------#####
+  output$disclaimer <- renderText({
+    "Shinyscope, 2023"
+  })
 })
