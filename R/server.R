@@ -197,8 +197,10 @@ shinyServer(function(input, output, session) {
 
   
   observeEvent(input$delete, {
-    assigns$table <- changeCategory(assigns$table, categories$cat_table, input$nRow)
-    categories$cat_table <- deleteRow(categories$cat_table, input$nRow)
+    if (!is.null(categories$cat_table)){
+      assigns$table <- changeCategory(assigns$table, categories$cat_table, input$nRow)
+      categories$cat_table <- deleteRow(categories$cat_table, input$nRow) 
+    }
     removeModal()
   })
   
