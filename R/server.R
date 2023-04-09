@@ -177,7 +177,8 @@ shinyServer(function(input, output, session) {
     updateTextInput(session, "cat_name", value = "")
     
     # updates category table with new row with new name, weights, assignments
-    categories$cat_table <- updateCategoryTable(input$assign, categories$cat_table, input$cat_name, input$weight, input$num_drops, input$grading_policy)
+    clobber <- getClobber(input$clobber_boolean, input$clobber_with)
+    categories$cat_table <- updateCategoryTable(input$assign, categories$cat_table, input$cat_name, input$weight, input$num_drops, input$grading_policy, clobber)
     if (!is.null(input$assign)){
       assigns$table <- updateCategory(assigns$table, input$assign, input$cat_name)
       }
@@ -212,6 +213,7 @@ shinyServer(function(input, output, session) {
       updateNumericInput(session, "nRow", max = nrow(categories$cat_table)) 
     }
     updateSelectizeInput(session, "change_assign", choices = assigns$table$colnames) #make dropdown of assignments
+    updateSelectizeInput(session, "change_clobber", choices = assigns$table$colnames)
   })
   
   observeEvent(input$nRow, {
@@ -229,7 +231,8 @@ shinyServer(function(input, output, session) {
   observeEvent(input$done, {
     if (!is.null(categories$cat_table)){
       assigns$table <- changeCategory(assigns$table, categories$cat_table, input$nRow)
-      categories$cat_table <- updateRow(categories$cat_table, input$nRow, input$change_name, input$change_weight, input$change_assign, input$change_drops, input$change_policy)
+      clobber <- getClobber(input$change_clobber_boolean, input$change_clobber)
+      categories$cat_table <- updateRow(categories$cat_table, input$nRow, input$change_name, input$change_weight, input$change_assign, input$change_drops, input$change_policy, clobber)
       if (!is.null(input$assign)){
         assigns$table <- updateCategory(assigns$table, input$change_assign, input$change_name)
       }
@@ -265,7 +268,8 @@ shinyServer(function(input, output, session) {
     choices <- assigns$table$colnames
     if (!is.null(assigns$table))
     {choices <- assigns$table %>% filter (category == "Unassigned") %>% select(colnames)} 
-    updateSelectizeInput(session, "assign", choices = choices) 
+    updateSelectizeInput(session, "assign", choices = choices)
+    updateSelectizeInput(session, "clobber_with", choices = assigns$table$colnames)
   })
   observeEvent(input$create, {
     removeModal()
@@ -279,10 +283,6 @@ shinyServer(function(input, output, session) {
     }
   })
 
-  
-  
-  
-  
   
   #####------------------------ Disclaimer - FOOTER ------------------------#####
   output$disclaimer <- renderText({

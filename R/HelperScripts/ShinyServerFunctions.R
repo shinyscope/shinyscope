@@ -11,6 +11,13 @@ modal_confirm <- modalDialog(
     numericInput("change_drops", "How Many Drops:", 0, step = 1),
     radioButtons("change_policy", strong("Aggregation Method"),
                  choices = c("Equally Weighted", "Weighted by Points")),
+    radioButtons("change_clobber_boolean", strong("Is there a clobber policy?"),
+                 choices = c("Yes", "No"),
+                 selected = "No"),
+    conditionalPanel(
+      condition = "input.change_clobber_boolean == 'Yes'",
+      selectInput("change_clobber", "Clobber with the Following Assignment",
+                  choices = '')),
     selectizeInput("change_assign", "Select Assignments:",
                    choices = '',
                    multiple = TRUE,
@@ -27,13 +34,14 @@ modal_confirm <- modalDialog(
 
 
 #update a row in category table
-updateRow <- function(cat_table, row, name, weight, assignments,num_drops, grading_policy){
+updateRow <- function(cat_table, row, name, weight, assignments,num_drops, grading_policy, clobber){
   if (!is.null(cat_table) && row <= nrow(cat_table)){
     cat_table[row, 1] <- name
     cat_table[row, 2] <- weight
     cat_table[row, 3] <- stringr::str_c(assignments, collapse = ", ")
     cat_table[row, 4] <- num_drops
     cat_table[row, 5] <- grading_policy
+    cat_table[row, 6] <- clobber
   }
   
   return (cat_table)
@@ -49,6 +57,13 @@ add_new_category_modal <- modalDialog(
     numericInput("num_drops", "How Many Drops:", 0, step = 1),
     radioButtons("grading_policy", strong("Aggregation Method"),
                  choices = c("Equally Weighted", "Weighted by Points")),
+    radioButtons("clobber_boolean", strong("Is there a clobber policy?"),
+                 choices = c("Yes", "No"),
+                 selected = "No"),
+    conditionalPanel(
+      condition = "input.clobber_boolean == 'Yes'",
+      selectInput("clobber_with", "Clobber with the Following Assignment",
+                  choices = '')),
     selectizeInput("assign", "Select Assignments:",
                    choices = '',
                    multiple = TRUE,

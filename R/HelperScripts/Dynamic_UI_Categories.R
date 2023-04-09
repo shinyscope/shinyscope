@@ -8,6 +8,7 @@ dynamic_ui_categories <- function(categories_table){
     assignments <- categories_table[i,3]
     drops <- categories_table[i,4]
     grading_policy <- categories_table[i,5]
+    clobber <- categories_table[i,6]
 
     category_html <- paste0(
       '<div class="alert alert-success" role="alert">',
@@ -28,13 +29,15 @@ dynamic_ui_categories <- function(categories_table){
 
           p(strong("Drops:"), style = "margin-bottom: 10px;"),
           p(strong("Grading Policy:")),
-          p(strong("Assignments Included:"), style = "margin-bottom: 10px;")
+          p(strong("Clobber Policy:"), style = "margin-bottom: 10px;"),
+          p(strong("Assignments Included:"), style = "margin-bottom: 10px;"),
         ),
         div(
           style = "flex: 1;",
           p(paste(weight), style = "margin-bottom: 10px;"),
           p(paste(drops), style = "margin-bottom: 10px;"),
           p(paste(grading_policy)),
+          p(paste(clobber), style = "margin-bottom: 10px;"),
           p(paste(assignments), style = "margin-bottom: 10px;")
         )
       ),
