@@ -244,10 +244,15 @@ shinyServer(function(input, output, session) {
     pivot <- pivotdf()
     calculateGrades(students, pivot, categories$cat_table)
   })
+  output$text <- renderText({"Let's upload some data first..."})
   
   output$myList <- renderUI(
-    HTML(markdown::renderMarkdown(text = paste(paste0("- ", getUnassigned(assigns$table), "\n"), collapse = "")
-  )))
+    if (!is.null(assigns$table)){
+      HTML(markdown::renderMarkdown(text = paste(paste0("- ", getUnassigned(assigns$table), "\n"), collapse = "")))
+    } else {
+      textOutput("text")
+    }
+    )
   
 
   
