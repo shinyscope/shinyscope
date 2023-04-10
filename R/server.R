@@ -211,6 +211,7 @@ shinyServer(function(input, output, session) {
   # modal opens when Edit button pressed and updates default settings of input widgets
   observeEvent(input$edit, {
     showModal(modal_confirm)
+    updateNumericInput(session, "nRow", value = 1, min = 1, max = nrow(categories$cat_table))
   })
   
   observeEvent(input$nRow, {
@@ -220,13 +221,13 @@ shinyServer(function(input, output, session) {
     updateSliderInput(session, "change_weight", value = categories$cat_table$Weights[num])
     
     if (!is.null(categories$cat_table)){
-      
       # Preload selected values
       preloaded_values <- categories$cat_table$Assignments_Included[num]
       preloaded_values <- unlist(strsplit(preloaded_values, ", ")) # Split the string and unlist the result
  
       # Update the SelectizeInput with the preloaded values
       choices = assigns$table[2]
+      updateSelectInput(session, "change_clobber", choices = categories$cat_table$Categories)
       updateSelectizeInput(session, "change_assign", choices = choices, selected = preloaded_values) #make dropdown of assignments
     }
   })
@@ -278,7 +279,7 @@ shinyServer(function(input, output, session) {
     if (!is.null(assigns$table))
     {choices <- assigns$table %>% filter (category == "Unassigned") %>% select(colnames)} 
     updateSelectizeInput(session, "assign", choices = choices)
-    updateSelectizeInput(session, "clobber_with", choices = assigns$table$colnames)
+    updateSelectInput(session, "clobber_with", choices = categories$cat_table$Categories)
   })
   observeEvent(input$create, {
     removeModal()
