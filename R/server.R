@@ -242,28 +242,29 @@ shinyServer(function(input, output, session) {
       # Preload selected values
       preloaded_values <- categories$cat_table$Assignments_Included[num]
       preloaded_values <- unlist(strsplit(preloaded_values, ", ")) # Split the string and unlist the result
-      preloaded_values <- as.character(preloaded_values) # Convert to character vector
+      #preloaded_values <- as.character(preloaded_values) # Convert to character vector
       
-      # Create a data frame with assignment names and a boolean indicating if it's preloaded
-      assignment_df <- data.frame(Assignment = assigns$table$colnames,
-                                  Preloaded = assigns$table$colnames %in% preloaded_values,
-                                  Assigned = assigns$table$colnames %in% unlist(strsplit(categories$cat_table$Assignments_Included, ", ")),
-                                  stringsAsFactors = FALSE)
+      # # Create a data frame with assignment names and a boolean indicating if it's preloaded
+      # assignment_df <- data.frame(Assignment = assigns$table$colnames,
+      #                             Preloaded = assigns$table$colnames %in% preloaded_values,
+      #                             Assigned = assigns$table$colnames %in% unlist(strsplit(categories$cat_table$Assignments_Included, ", ")),
+      #                             stringsAsFactors = FALSE)
       
       # Filter the data frame to get the choices, preloaded_values, and assigned assignments
-      choices <- assignment_df$Assignment[!assignment_df$Preloaded & !assignment_df$Assigned]
-      preloaded_values <- assignment_df$Assignment[assignment_df$Preloaded]
-      assigned <- assignment_df$Assignment[assignment_df$Assigned]
+      # choices <- assignment_df$Assignment[!assignment_df$Preloaded & !assignment_df$Assigned]
+      # #preloaded_values <- assignment_df$Assignment[assignment_df$Preloaded]
+      # assigned <- assignment_df$Assignment[assignment_df$Assigned]
       
-      print(paste("assignment_df:", assignment_df))
-      print(paste("preloaded values: ", preloaded_values))
-      print(paste("choices:", choices))
-      print(paste("assigned:", assigned))
-      print(paste("assign table:", assigns$table$colnames))
-      print(paste("cat_table:", categories$cat_table$Assignments_Included))
+      # print(paste("assignment_df:", assignment_df))
+      # print(paste("preloaded values: ", preloaded_values))
+      # print(paste("choices:", choices))
+      # print(paste("assigned:", assigned))
+      # print(paste("assign table:", assigns$table$colnames))
+      # print(paste("cat_table:", categories$cat_table$Assignments_Included))
       
       # Update the SelectizeInput with the preloaded values
-      updateSelectizeInput(session, "change_assign", choices = choices, selected = assigned) #make dropdown of assignments
+      choices = assigns$table[2]
+      updateSelectizeInput(session, "change_assign", choices = choices, selected = preloaded_values) #make dropdown of assignments
     }
   })
   
