@@ -2,7 +2,7 @@
 
 
 #load helper scripts
-HSLocation <- "helperScripts/"
+HSLocation <- "HelperScripts/"
 source(paste0(HSLocation, "ShinyServerFunctions.R"))
 source(paste0(HSLocation, "AssignmentTable.R"))
 source(paste0(HSLocation, "Pivot.R"))
