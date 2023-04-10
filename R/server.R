@@ -205,26 +205,8 @@ shinyServer(function(input, output, session) {
     removeModal()
   })
   
-  # # modal opens when Edit button pressed and updates default settings of input widgets
-  # observeEvent(input$edit, {
-  #   showModal(modal_confirm)
-  #   num <- input$nRow
-  #   if (!is.null(categories$cat_table)){
-  #     updateNumericInput(session, "nRow", max = nrow(categories$cat_table)) 
-  #   }
-  #   updateSelectizeInput(session, "change_assign", choices = assigns$table$colnames) #make dropdown of assignments
-  #   updateSelectizeInput(session, "change_clobber", choices = assigns$table$colnames)
-  # })
-  # 
-  # observeEvent(input$nRow, {
-  #   #updates default inputs when picking different rows
-  #   num <- input$nRow
-  #   updateTextInput(session, "change_name", value = categories$cat_table$Categories[num])
-  #   updateSliderInput(session, "change_weight", value = categories$cat_table$Weights[num])
-  # })
-  
 
-  #####------------------------EDIT MODAL - FIXING THE SELECTIZE INPUT ------------------------#####
+  #####------------------------EDIT MODAL  ------------------------#####
   
   # modal opens when Edit button pressed and updates default settings of input widgets
   observeEvent(input$edit, {
@@ -242,35 +224,12 @@ shinyServer(function(input, output, session) {
       # Preload selected values
       preloaded_values <- categories$cat_table$Assignments_Included[num]
       preloaded_values <- unlist(strsplit(preloaded_values, ", ")) # Split the string and unlist the result
-      #preloaded_values <- as.character(preloaded_values) # Convert to character vector
-      
-      # # Create a data frame with assignment names and a boolean indicating if it's preloaded
-      # assignment_df <- data.frame(Assignment = assigns$table$colnames,
-      #                             Preloaded = assigns$table$colnames %in% preloaded_values,
-      #                             Assigned = assigns$table$colnames %in% unlist(strsplit(categories$cat_table$Assignments_Included, ", ")),
-      #                             stringsAsFactors = FALSE)
-      
-      # Filter the data frame to get the choices, preloaded_values, and assigned assignments
-      # choices <- assignment_df$Assignment[!assignment_df$Preloaded & !assignment_df$Assigned]
-      # #preloaded_values <- assignment_df$Assignment[assignment_df$Preloaded]
-      # assigned <- assignment_df$Assignment[assignment_df$Assigned]
-      
-      # print(paste("assignment_df:", assignment_df))
-      # print(paste("preloaded values: ", preloaded_values))
-      # print(paste("choices:", choices))
-      # print(paste("assigned:", assigned))
-      # print(paste("assign table:", assigns$table$colnames))
-      # print(paste("cat_table:", categories$cat_table$Assignments_Included))
-      
+ 
       # Update the SelectizeInput with the preloaded values
       choices = assigns$table[2]
       updateSelectizeInput(session, "change_assign", choices = choices, selected = preloaded_values) #make dropdown of assignments
     }
   })
-  
-  
-  
-  
   
   
   observeEvent(input$cancel, {
