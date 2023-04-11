@@ -27,7 +27,7 @@ mainPanel(
                 tabPanel("Original Data",
                          dataTableOutput("data")),
                 tabPanel("Data Manipulation",
-                         dataTableOutput("table"))
+                         dataTableOutput("data_manipulation"))
                 
     )
 )

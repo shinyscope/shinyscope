@@ -13,7 +13,9 @@ source(paste0(HSLocation, "Dynamic_UI_Categories.R"))
 shinyServer(function(input, output, session) {
   
   
+  #####----------------------------------------------------------------#####
   #####------------------------uploading a file------------------------#####
+  #####----------------------------------------------------------------#####
   data <- reactive({
     req(input$upload)
     
@@ -23,6 +25,9 @@ shinyServer(function(input, output, session) {
            validate("Invalid file; Please upload a .csv or .tsv file")
     )
   })
+  #####----------------------------------------------------------------#####
+  #####---------------------------ANALYSIS TAB-------------------------#####
+  #####----------------------------------------------------------------#####
   
   #####------------------------ the original uploaded data------------------------#####
   output$data <- renderDataTable({
@@ -61,10 +66,9 @@ shinyServer(function(input, output, session) {
     return(new_time)
   })
   
-  output$table <- renderDataTable({
+  output$data_manipulation <- renderDataTable({
     new_data()
   })
-  
   
   
   #####------------------------pivot_longer function------------------------#####
@@ -77,57 +81,10 @@ shinyServer(function(input, output, session) {
     pivotdf()
   })
 
-
-
-  #####------------------------Manipulate dataframe------------------------#####
-  modified_data <- reactiveVal(NULL)
-  
-  #####------------------------select columns & calculate the mean------------------------##### 
-  observe({
-    numeric_cols <- colnames(data())[sapply(data(), is.numeric)] #this only selects numeric columns
-    updateSelectizeInput(session, "cols", choices =  numeric_cols) # all columns: updateSelectizeInput(session, "cols", choices = colnames(data()))
-  })
-  #####------------------------select columns & calculate the mean------------------------##### 
+   #####--------------------------------------------------------------------#####
+   #####---------------------------STUDENT VIEW TAB-------------------------#####
+   #####--------------------------------------------------------------------#####
    
-   
-  #it seems to calculate the mean correctly
-  
-  result <- eventReactive(input$calculate, {
-    dataframe <- data()
-    columns <- dataframe[,input$cols]
-    dataframe$mean <- rowMeans(columns)
-    #
-    return(dataframe)
-  })
-  
-  #in DATA MANIPULATION tab
-  #output function look for action in the above function
-  #for calculating the mean and return the result
-  # RETURNS THE MEAN by adding a column at the end
-
-  # output$table <- renderDataTable({
-  #   if(is.null(result())){return()}
-  #   datatable(result())
-  # })
-  
-  #####------------------------Download File------------------------#####
-  observeEvent(input$upload, {
-    output$downloadBtn <- renderUI({
-      downloadButton("downloadData", "Download Data")
-    })
-  })
-  
-  #####------------------------CSV file is named modified_data_YYYY-MM-DD.csv------------------------#####
-  output$downloadData <- downloadHandler(
-    filename = function() {
-      paste("modified_data", Sys.Date(), ".csv", sep = "")
-    },
-    content = function(file) {
-      write.csv(result(), file, row.names = FALSE)
-    })
-  
-  
-  
   #####------------------------StudentView functions------------------------#####
   processed_sids <- reactive({
     new_data <- new_data()
@@ -166,46 +123,32 @@ shinyServer(function(input, output, session) {
            '<i class="fas fa-exclamation-triangle"></i> ', sid_nas, ' SID numbers are missing.</div>')
   })
   
-
-  #####------------------------Assignment View------------------------#####
+  
+  #####--------------------------------------------------------------------#####
+  #####------------------------ CONFIGURATIONS TAB-------------------------#####
+  #####--------------------------------------------------------------------#####
+  
+  #####---------------------------Assignment View--------------------------#####
   
   categories <- reactiveValues(cat_table = NULL)
   
-  observeEvent(input$create, {
-    updateTextInput(session, "assign", value = "")
-    updateTextInput(session, "cat_name", value = "")
-    
-    # updates category table with new row with new name, weights, assignments
-    clobber <- getClobber(input$clobber_boolean, input$clobber_with)
-    categories$cat_table <- updateCategoryTable(input$assign, categories$cat_table, input$cat_name, input$weight, input$num_drops, input$grading_policy, clobber)
-    if (!is.null(input$assign)){
-      assigns$table <- updateCategory(assigns$table, input$assign, input$cat_name)
-      }
-  })
-  
-  # renders table of categories with respective assignments and weights
+  #####--------------------------- EDIT MODAL  ----------------------------#####
+ 
+  #renders table of categories with respective assignments and weights
   output$cat_table <- renderDataTable({ datatable(categories$cat_table)})
   
   #reactive unassigned assignments table
   assigns <- reactiveValues(table = NULL)
   
-  # creates unassigned assignments table
+  #creates unassigned assignments table
   observe({
     assigns$table <- data.frame(assignments()) %>%
       filter(!str_detect(colnames, "Name|Sections|Max|Time|Late|Email|SID"))
   })
-
-  
-  observeEvent(input$delete, {
-    if (!is.null(categories$cat_table)){
-      assigns$table <- changeCategory(assigns$table, categories$cat_table, input$nRow)
-      categories$cat_table <- deleteRow(categories$cat_table, input$nRow) 
-    }
-    removeModal()
-  })
   
   output$text <- renderText({"Let's upload some data first..."})
   
+  #prints the "New Assignmetns" 
   output$myList <- renderUI(
     if (!is.null(assigns$table)){
       HTML(markdown::renderMarkdown(text = paste(paste0("- ", getUnassigned(assigns$table), "\n"), collapse = "")))
@@ -213,8 +156,8 @@ shinyServer(function(input, output, session) {
       textOutput("text")
     }
   )
-  
-  #####------------------------EDIT MODAL  ------------------------#####
+
+  #####--------------------------- EDIT MODAL  ----------------------------#####
   
   # modal opens when Edit button pressed and updates default settings of input widgets
   observeEvent(input$edit, {
@@ -247,44 +190,71 @@ shinyServer(function(input, output, session) {
     }
   })
   
-  
-  observeEvent(input$cancel, {
-    removeModal() #cancel button closes modal without changing anything
-  })
-  
+  #####------------------------Modal Done button ------------------------#####
   # modal closes when Done button pressed, categories are updated
   observeEvent(input$done, {
     if (!is.null(categories$cat_table)){
       assigns$table <- changeCategory(assigns$table, categories$cat_table, input$nRow)
       clobber <- getClobber(input$change_clobber_boolean, input$change_clobber)
       categories$cat_table <- updateRow(categories$cat_table, input$nRow, input$change_name, input$change_weight, input$change_assign, input$change_drops, input$change_policy, clobber)
-      if (!is.null(input$assign)){
-        assigns$table <- updateCategory(assigns$table, input$change_assign, input$change_name)
       }
-    }
+    if (!is.null(input$change_assign)){
+      assigns$table <- updateCategory(assigns$table, input$change_assign, input$change_name)
+      }
+    
     removeModal()
   })
   
-  #####------------------------ Grading ------------------------#####
-
-
   
+  #####------------------------ create a new assignment category ------------------------#####
   
-  #####------------------------ DYNAMIC UI FOR DISPLAYING CATEGORIES ------------------------#####
- 
-  #display modal for editing existing assignemnt category
+    # input$create event is activated on "save" button when creating a new assignemnt category
+  observeEvent(input$create, {
+      updateTextInput(session, "assign", value = "")
+      updateTextInput(session, "cat_name", value = "")
+    
+    # updates category table with new row with new name, weights, assignments
+  clobber <- getClobber(input$clobber_boolean, input$clobber_with)
+  categories$cat_table <- updateCategoryTable(input$assign, categories$cat_table, input$cat_name, input$weight, input$num_drops, input$grading_policy, clobber)
+  if (!is.null(input$assign)){
+      assigns$table <- updateCategory(assigns$table, input$assign, input$cat_name)
+      }
+  })
+  
+    #display modal for a new assignment category
   observeEvent(input$create_category, {
+      
     showModal(add_new_category_modal)
     choices <- assigns$table$colnames
     if (!is.null(assigns$table))
-    {choices <- assigns$table %>% filter (category == "Unassigned") %>% select(colnames)} 
-    updateSelectizeInput(session, "assign", choices = choices)
-    updateSelectInput(session, "clobber_with", choices = categories$cat_table$Categories)
+      {choices <- assigns$table %>% filter (category == "Unassigned") %>% select(colnames)} 
+      updateSelectizeInput(session, "assign", choices = choices)
+      updateSelectInput(session, "clobber_with", choices = categories$cat_table$Categories)
   })
+  
   observeEvent(input$create, {
     removeModal()
   })
-    
+  
+  
+  #####------------------------ delete button on modal ------------------------#####
+  
+  observeEvent(input$delete, {
+    if (!is.null(categories$cat_table)){
+      assigns$table <- changeCategory(assigns$table, categories$cat_table, input$nRow)
+      categories$cat_table <- deleteRow(categories$cat_table, input$nRow) 
+    }
+    removeModal()
+  })
+  #####------------------------ cancel button on modal ------------------------#####
+  
+  #cancel button closes modal without changing anything
+  observeEvent(input$cancel, {
+    removeModal() 
+  })
+  
+  
+  #####------------------------ DYNAMIC UI FOR DISPLAYING CATEGORIES ------------------------#####
   #display dynamic UI
   output$dynamic_ui <- renderUI({
     if(!is.null(categories$cat_table)){
@@ -293,6 +263,62 @@ shinyServer(function(input, output, session) {
     }
   })
 
+  
+  
+  #####--------------------------------------------------------------------#####
+  #####------------------------------ GRADING -----------------------------#####
+  #####--------------------------------------------------------------------#####
+  
+
+  
+  #####------------------------Manipulate dataframe------------------------#####
+  modified_data <- reactiveVal(NULL)
+  
+  
+  #####------------------------select columns & calculate the mean------------------------##### 
+  
+  
+  #it seems to calculate the mean correctly
+  
+  result <- eventReactive(input$calculate, {
+    dataframe <- data()
+    columns <- dataframe[,input$cols]
+    dataframe$mean <- rowMeans(columns)
+    #
+    return(dataframe)
+  })
+  
+  
+  #####------------------------select columns & calculate the mean------------------------##### 
+  observe({
+    numeric_cols <- colnames(data())[sapply(data(), is.numeric)] #this only selects numeric columns
+    updateSelectizeInput(session, "cols", choices =  numeric_cols) # all columns: updateSelectizeInput(session, "cols", choices = colnames(data()))
+  })
+  
+  
+  
+  
+  
+  
+  #####------------------------Download File------------------------#####
+  observeEvent(input$upload, {
+    output$downloadBtn <- renderUI({
+      downloadButton("downloadData", "Download Data")
+    })
+  })
+  
+  #####------------------------CSV file is named modified_data_YYYY-MM-DD.csv------------------------#####
+  
+  
+  ### !!! STILL NEED TO MODIFY TO WHAT WE WANT TO DOWNLOAD####
+  output$downloadData <- downloadHandler(
+    filename = function() {
+      paste("modified_data", Sys.Date(), ".csv", sep = "")
+    },
+    content = function(file) {
+      write.csv(result(), file, row.names = FALSE)
+    })
+  
   
   #####------------------------ Disclaimer - FOOTER ------------------------#####
   output$disclaimer <- renderText({
