@@ -32,6 +32,10 @@ createAssignTable <- function(data) {
            new_colnames = paste0(new_colnames, type))%>% # concatenate gs_col and type
     select(new_colnames, colnames) %>%
     mutate(category = "Unassigned")
+  
+  # Replace all "," with ":" in the colnames to avoid the issue with selecting these assignments in creating categories.
+  assignments$colnames <- str_replace_all(assignments$colnames, ",", ":")
+  
   return(assignments)
 }
 
