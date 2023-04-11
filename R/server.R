@@ -205,7 +205,16 @@ shinyServer(function(input, output, session) {
     removeModal()
   })
   
-
+  output$text <- renderText({"Let's upload some data first..."})
+  
+  output$myList <- renderUI(
+    if (!is.null(assigns$table)){
+      HTML(markdown::renderMarkdown(text = paste(paste0("- ", getUnassigned(assigns$table), "\n"), collapse = "")))
+    } else {
+      textOutput("text")
+    }
+  )
+  
   #####------------------------EDIT MODAL  ------------------------#####
   
   # modal opens when Edit button pressed and updates default settings of input widgets
@@ -258,22 +267,7 @@ shinyServer(function(input, output, session) {
   })
   
   #####------------------------ Grading ------------------------#####
-  
-  output$grades <- renderDataTable({
-    students <- processed_sids()$unique_sids %>% select(names)
-    pivot <- pivotdf()
-    calculateGrades(students, pivot, categories$cat_table)
-  })
-  output$text <- renderText({"Let's upload some data first..."})
-  
-  output$myList <- renderUI(
-    if (!is.null(assigns$table)){
-      HTML(markdown::renderMarkdown(text = paste(paste0("- ", getUnassigned(assigns$table), "\n"), collapse = "")))
-    } else {
-      textOutput("text")
-    }
-    )
-  
+
 
   
   

@@ -39,6 +39,10 @@ AssignmentView <- tabPanel("Configurations",
                                                  uiOutput("myList"),
                                                  h4("Existing Categories"),
                                                  uiOutput("dynamic_ui")
+                                        ),
+                                        tabPanel("Grading Trials",
+                                                 selectInput("student", "Pick a student", choices = '')
+                                          
                                         )
                                       )
                                     )
