@@ -178,7 +178,8 @@ shinyServer(function(input, output, session) {
  
       # Update the SelectizeInput with the preloaded values
       updateRadioButtons(session, "change_clobber_boolean", selected = "No")
-      choices = assigns$table[2]
+      choices = setdiff(assigns$table[[2]], categories$cat_table$Assignments_Included)
+
       prev_selected <- ""
       if (categories$cat_table$Clobber_Policy[num] != "None"){
         prev_selected <- unlist(strsplit(categories$cat_table$Clobber_Policy[num], "Clobbered with "))
@@ -197,11 +198,11 @@ shinyServer(function(input, output, session) {
       assigns$table <- changeCategory(assigns$table, categories$cat_table, input$nRow)
       clobber <- getClobber(input$change_clobber_boolean, input$change_clobber)
       categories$cat_table <- updateRow(categories$cat_table, input$nRow, input$change_name, input$change_weight, input$change_assign, input$change_drops, input$change_policy, clobber)
-      }
+      
     if (!is.null(input$change_assign)){
       assigns$table <- updateCategory(assigns$table, input$change_assign, input$change_name)
       }
-    
+    }
     removeModal()
   })
   
@@ -210,8 +211,6 @@ shinyServer(function(input, output, session) {
   
     # input$create event is activated on "save" button when creating a new assignemnt category
   observeEvent(input$create, {
-      updateTextInput(session, "assign", value = "")
-      updateTextInput(session, "cat_name", value = "")
     
     # updates category table with new row with new name, weights, assignments
   clobber <- getClobber(input$clobber_boolean, input$clobber_with)
