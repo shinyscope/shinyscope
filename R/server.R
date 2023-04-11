@@ -43,7 +43,6 @@ shinyServer(function(input, output, session) {
   })
   #####------------------------creates a table of the assignments------------------------#####
   output$assign <- renderDataTable({
-   # assignments()
     assigns$table #reactiveValue table from Assignment View tab
 })
   
@@ -57,7 +56,7 @@ shinyServer(function(input, output, session) {
       rename(!!!setNames(names(.), new_colnames))
     #fix dates
     new_time <- data_new_colnames%>%
-        mutate(across(contains("submission_time"), lubridate::ymd_hms), # convert to datetimes
+        mutate(across(contains("submission_time"), lubridate::mdy_hm), #convert to datetimes , previous format: lubridate::ymd_hms
               across(contains("lateness"), lubridate::hms))
     return(new_time)
   })
