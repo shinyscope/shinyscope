@@ -276,12 +276,12 @@ shinyServer(function(input, output, session) {
     }
   })
   
-  # output$grades_table <- renderDataTable({
-  #   if (!is.null(categories$cat_table)){
-  #     num_students <- nrow(processed_sids()$unique_sids)
-  #     return (createGradesTable(pivotdf(), categories$cat_table, assigns$table, processed_sids()$unique_sids$names))
-  #   }
-  # })
+  output$grades_table <- renderDataTable({
+    if (!is.null(categories$cat_table)){
+      return (createGradesTable(pivotdf(), categories$cat_table, assigns$table, processed_sids()$unique_sids$names))
+    }
+  })
+  
   
   #####--------------------------------------------------------------------#####
   
@@ -310,10 +310,6 @@ shinyServer(function(input, output, session) {
     numeric_cols <- colnames(data())[sapply(data(), is.numeric)] #this only selects numeric columns
     updateSelectizeInput(session, "cols", choices =  numeric_cols) # all columns: updateSelectizeInput(session, "cols", choices = colnames(data()))
   })
-  
-  
-  
-  
   
   
   #####------------------------Download File------------------------#####
