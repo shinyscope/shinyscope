@@ -226,8 +226,15 @@ shinyServer(function(input, output, session) {
       preloaded_values <- unlist(strsplit(preloaded_values, ", ")) # Split the string and unlist the result
  
       # Update the SelectizeInput with the preloaded values
+      updateRadioButtons(session, "change_clobber_boolean", selected = "No")
       choices = assigns$table[2]
-      updateSelectInput(session, "change_clobber", choices = categories$cat_table$Categories)
+      prev_selected <- ""
+      if (categories$cat_table$Clobber_Policy[num] != "None"){
+        prev_selected <- unlist(strsplit(categories$cat_table$Clobber_Policy[num], "Clobbered with "))
+        updateRadioButtons(session, "change_clobber_boolean", selected = "Yes")
+
+      }
+      updateSelectInput(session, "change_clobber", choices = categories$cat_table$Categories, selected = prev_selected)
       updateSelectizeInput(session, "change_assign", choices = choices, selected = preloaded_values) #make dropdown of assignments
     }
   })
