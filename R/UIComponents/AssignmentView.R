@@ -41,8 +41,11 @@ AssignmentView <- tabPanel("Configurations",
                                                  uiOutput("dynamic_ui")
                                         ),
                                         tabPanel("Grading Trials",
-                                                 selectInput("student", "Pick a student", choices = '')
-                                          
+                                                 selectInput("pick_student", "Pick a student", choices = ''),
+                                                 selectInput("pick_cat", "Pick a category", choices = ''),
+                                                 dataTableOutput("individ_grades"),
+                                                 dataTableOutput("grades_table")
+                                                 
                                         )
                                       )
                                     )

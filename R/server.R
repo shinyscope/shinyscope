@@ -199,9 +199,7 @@ shinyServer(function(input, output, session) {
       clobber <- getClobber(input$change_clobber_boolean, input$change_clobber)
       categories$cat_table <- updateRow(categories$cat_table, input$nRow, input$change_name, input$change_weight, input$change_assign, input$change_drops, input$change_policy, clobber)
       
-    if (!is.null(input$change_assign)){
       assigns$table <- updateCategory(assigns$table, input$change_assign, input$change_name)
-      }
     }
     removeModal()
   })
@@ -265,7 +263,26 @@ shinyServer(function(input, output, session) {
   
   
   #####--------------------------------------------------------------------#####
-  #####------------------------------ GRADING -----------------------------#####
+  #####------------------------ Grading ------------------------#####
+  observe({
+    updateSelectInput(session, "pick_student", choices = processed_sids()$unique_sids$names)
+    updateSelectInput(session, "pick_cat", choices = categories$cat_table$Categories)
+  })
+  
+  
+  output$individ_grades <- renderDataTable({
+    if (!is.null(categories$cat_table)){
+      return (getValidAssigns(pivotdf(),input$pick_student, categories$cat_table, input$pick_cat, assigns$table))
+    }
+  })
+  
+  # output$grades_table <- renderDataTable({
+  #   if (!is.null(categories$cat_table)){
+  #     num_students <- nrow(processed_sids()$unique_sids)
+  #     return (createGradesTable(pivotdf(), categories$cat_table, assigns$table, processed_sids()$unique_sids$names))
+  #   }
+  # })
+  
   #####--------------------------------------------------------------------#####
   
 
