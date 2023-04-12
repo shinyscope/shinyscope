@@ -32,8 +32,8 @@ Configurations <- tabPanel("Config",
                                         tabPanel("Grading Trials",
                                                  selectInput("pick_student", "Pick a student", choices = ''),
                                                  selectInput("pick_cat", "Pick a category", choices = ''),
-                                                 dataTableOutput("individ_grades"),
-                                                 dataTableOutput("grades_table")
+                                                 dataTableOutput("individ_grades")
+                                                # dataTableOutput("grades_table")
                                                  
                                         ),
                                         tabPanel("Students",

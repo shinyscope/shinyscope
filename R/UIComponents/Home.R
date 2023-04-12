@@ -10,9 +10,9 @@ Home <- tabPanel(
   mainPanel(
   
    
-    uiOutput("grades_table2_ui"),
-    
+    #uiOutput("grades_table2_ui"),
+    dataTableOutput("grades"),
     br(),
-    actionButton("download_grades_data", label = "Download")
+    downloadButton("download_grades_data", label = "Download")
   )
 )

@@ -279,35 +279,56 @@ shinyServer(function(input, output, session) {
   
   output$individ_grades <- renderDataTable({
     if (!is.null(categories$cat_table)){
-      return (getValidAssigns(pivotdf(),input$pick_student, categories$cat_table, input$pick_cat, assigns$table))
+      cat_num <- which(categories$cat_table$Categories == input$pick_cat)
+      return (getValidAssigns(pivotdf(),input$pick_student, categories$cat_table, cat_num))
     }
   })
   
-  output$grades_table <- renderDataTable({
-    if (!is.null(categories$cat_table)){
-      return (createGradesTable(pivotdf(), categories$cat_table, assigns$table, processed_sids()$unique_sids$names))
-    }
-  })
-  output$error_grade_data_text <- renderText({
-    "Please create assignment categories first."
-  })
+  grades <- reactiveValues(table = NULL)
   
-  output$grades_table2_ui <- renderUI({
-    if (is.data.frame(categories$cat_table)) {
-      DT::dataTableOutput("grades_table2")
-    } else {
-      textOutput("error_grade_data_text")
+  observe({
+    if (!is.null(data())){
+      grades$table <- createGradesTable(processed_sids()$unique_sids$names) 
     }
   })
   
-  output$grades_table2 <- renderDataTable({
-    if (is.data.frame(categories$cat_table)) {
-      print(categories$cat_table)
-      return(createGradesTable(pivotdf(), categories$cat_table, assigns$table, processed_sids()$unique_sids$names))
-    } else {
-      return(NULL)
-    }
+  observeEvent(input$create, {
+    grades$table <- updateGrades(grades$table, pivotdf(), categories$cat_table)
   })
+  
+  output$grades <- renderDataTable(
+    grades$table
+  )
+  
+  grades_table <- reactive({
+    data <- grades$table
+    return (data)
+    })
+  # output$grades_table <- renderDataTable({
+  #   if (!is.null(categories$cat_table)){
+  #     return (createGradesTable(pivotdf(), categories$cat_table, assigns$table, processed_sids()$unique_sids$names))
+  #   }
+  # })
+  # output$error_grade_data_text <- renderText({
+  #   "Please create assignment categories first."
+  # })
+  # 
+  # output$grades_table2_ui <- renderUI({
+  #   if (is.data.frame(categories$cat_table)) {
+  #     DT::dataTableOutput("grades_table2")
+  #   } else {
+  #     textOutput("error_grade_data_text")
+  #   }
+  # })
+  # 
+  # output$grades_table2 <- renderDataTable({
+  #   if (is.data.frame(categories$cat_table)) {
+  #     print(categories$cat_table)
+  #     return(createGradesTable(pivotdf(), categories$cat_table, assigns$table, processed_sids()$unique_sids$names))
+  #   } else {
+  #     return(NULL)
+  #   }
+  # })
  
   
   #####--------------------------------------------------------------------#####
@@ -365,10 +386,10 @@ shinyServer(function(input, output, session) {
   ### !!! STILL NEED TO MODIFY TO WHAT WE WANT TO DOWNLOAD####
   output$download_grades_data <- downloadHandler(
     filename = function() {
-      paste("modified_data", Sys.Date(), ".csv", sep = "")
+      paste("course_grades", ".csv")
     },
-    content = function(file) {
-      write.csv(result(), file, row.names = FALSE)
+    content = function(filename) {
+      write.csv(grades$table, filename)
     })
   
   
