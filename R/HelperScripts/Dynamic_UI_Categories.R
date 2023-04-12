@@ -11,10 +11,12 @@ dynamic_ui_categories <- function(categories_table){
     clobber <- categories_table[i,6]
 
     category_html <- paste0(
-      '<div class="navbar navbar-expand-lg navbar-light bg-light"">',
-      '<strong style="font-size: 18px;">', tools::toTitleCase(category), '</strong>',
+      '<div class="navbar navbar-expand-lg navbar-light bg-light" style="padding: 10px;">',
+      '<span style="font-size: 21px;">', tools::toTitleCase(category),
+      '</span>',
       '</div>'
     )
+    
     
 
     tagList(
