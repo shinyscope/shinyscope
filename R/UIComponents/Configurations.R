@@ -1,4 +1,4 @@
-Configurations <- tabPanel("Configurations",
+Configurations <- tabPanel("Config",
                            fluidRow(
                              column(width = 4,
                                     tags$h1("Configurations"),
@@ -44,9 +44,9 @@ Configurations <- tabPanel("Configurations",
                                                  # Data Summary row
                                                  fluidRow(
                   
-                                                   column(width = 8, htmlOutput("num_assign_msg")),
-                                                   column(width = 8, htmlOutput("num_students_msg")),
-                                                   column(width = 8, htmlOutput("duplicates_msg"))
+                                                   column(width = 12, htmlOutput("num_assign_msg")),
+                                                   column(width = 12, htmlOutput("num_students_msg")),
+                                                   column(width = 12, htmlOutput("duplicates_msg"))
                                                  ),
 
                                                  # Main Panel with tabs and data tables

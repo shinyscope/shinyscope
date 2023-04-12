@@ -11,8 +11,7 @@ dynamic_ui_categories <- function(categories_table){
     clobber <- categories_table[i,6]
 
     category_html <- paste0(
-      '<div class="alert alert-success" role="alert">',
-    #  '<i class="fas fa-exclamation-triangle"></i> ',
+      '<div class="navbar navbar-expand-lg navbar-light bg-light"">',
       '<strong style="font-size: 18px;">', tools::toTitleCase(category), '</strong>',
       '</div>'
     )
