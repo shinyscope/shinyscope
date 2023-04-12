@@ -1,8 +1,7 @@
-AssignmentView <- tabPanel("Configurations",
+Configurations <- tabPanel("Configurations",
                            fluidRow(
                              column(width = 4,
                                     tags$h1("Configurations"),
-                                    # h4("Create a Grade Category"),
                                     helpText("Classify assignment types, implement grading policies, 
                               determine how to process unusual student records, and set the bins for letter grades.",
                                     br(),
@@ -13,16 +12,6 @@ AssignmentView <- tabPanel("Configurations",
                                     # actionButton("load", "Load Config"),
                                     br(),
                                      actionButton("edit", "Edit Existing Category"),
-                                    # 
-                                    # textInput("cat_name", "Enter Category Name", value = "", width = NULL, placeholder = NULL),
-                                    # sliderInput("weight", "How Much is This Worth?", min = 0, max = 1, value = 0.5),
-                                    # numericInput("num_drops", "How Many Drops:", 0, step = 1),
-                                    # radioButtons("grading_policy", strong("Aggregation Method"),
-                                    #              choices = c("Equally Weighted", "Weighted by Points")),
-                                    # selectizeInput("assign", "Select Assignments:",
-                                    #                choices = '',
-                                    #                multiple = TRUE),
-                                    # actionButton("create", "Create Category")
                              ),
                              column(width = 8,
                                     mainPanel(
@@ -46,9 +35,30 @@ AssignmentView <- tabPanel("Configurations",
                                                  dataTableOutput("individ_grades"),
                                                  dataTableOutput("grades_table")
                                                  
+                                        ),
+                                        tabPanel("Students",
+                                                 # Include Font Awesome library
+                                                 tags$head(tags$link(rel = "stylesheet", href = "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css")),
+                
+
+                                                 # Data Summary row
+                                                 fluidRow(
+                  
+                                                   column(width = 8, htmlOutput("num_assign_msg")),
+                                                   column(width = 8, htmlOutput("num_students_msg")),
+                                                   column(width = 8, htmlOutput("duplicates_msg"))
+                                                 ),
+
+                                                 # Main Panel with tabs and data tables
+                                                 mainPanel(
+                                                   tabsetPanel(
+                                                     tabPanel("SID issues", dataTableOutput("duplicate_sids")),
+                                                     tabPanel("All Students", dataTableOutput("students"))
+                                                   )
+                                                 )
+                                        )
                                         )
                                       )
                                     )
-                             )
-                           )
-)
+                              )
+                            )

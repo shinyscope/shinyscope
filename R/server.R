@@ -111,14 +111,16 @@ shinyServer(function(input, output, session) {
   output$num_students_msg <- renderText({
     sids <- processed_sids()$unique_sids
     num_rows <- nrow(sids)
-    paste0('<div class="alert alert-success" role="alert"><i class="fas fa-check-circle"></i> ', num_rows, ' students were imported.</div>')
+    num_assignments <- (nrow(assigns$table))
+    paste0('<div class="alert alert-success" role="alert"><i class="fas fa-check-circle"></i> ', num_rows, ' students were imported. <br>',
+           '<i class="fas fa-check-circle"></i> ', num_assignments, ' assignments were imported.</div>')
   })
   
-  output$num_assign_msg <- renderText({
-    #assignments <- assignments()
-    num_rows <- (nrow(assigns$table))
-    paste0('<div class="alert alert-success" role="alert"><i class="fas fa-check-circle"></i> ', num_rows, ' assignments were imported.</div>')
-  })
+  # output$num_assign_msg <- renderText({
+  #   #assignments <- assignments()
+  #   num_rows <- (nrow(assigns$table))
+  #   paste0('<div class="alert alert-success" role="alert"><i class="fas fa-check-circle"></i> ', num_rows, ' assignments were imported.</div>')
+  # })
   
   output$duplicates_msg <- renderText({
     dup_df <- processed_sids()$duplicates

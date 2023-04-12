@@ -1,4 +1,4 @@
-TestingTab <- tabPanel("Testing Tab", titlePanel("Testing"),
+Scratchpad <- tabPanel("Scratchpad",
                       sidebarPanel (
                         helpText("This tab is for testing new features.",
                                  br(),
@@ -11,9 +11,18 @@ TestingTab <- tabPanel("Testing Tab", titlePanel("Testing"),
                                    dataTableOutput("cat_table"),
                           tabPanel(h4("All-Grades Table"),
                                    actionButton("calculate_grades", label = "Calculate Class Grades"),
-                                   dataTableOutput("all_grades_table")
+                                   dataTableOutput("all_grades_table"),
+                            tabPanel("Assignments",
+                                     dataTableOutput("assign")), #displays assignment table
+                            tabPanel("Pivot Longer Table",
+                                     dataTableOutput("pivotlonger")), #displays assignment table
+                            tabPanel("Original Data",
+                                     dataTableOutput("data")),
+                            tabPanel("Data Manipulation",
+                                     dataTableOutput("data_manipulation"))
+                            
                           )
                         )
-                      )
-))
-
+)
+)
+)

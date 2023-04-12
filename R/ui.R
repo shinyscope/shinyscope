@@ -9,10 +9,10 @@ library(bslib)
 
 #Create UI Comps
 UICompDirectory <- "UIComponents/"
-source(paste0(UICompDirectory, "AnalysisTab.R"), local = TRUE)
-source(paste0(UICompDirectory, "StudentViewTab.R"), local = TRUE)
-source(paste0(UICompDirectory, "AssignmentView.R"), local = TRUE)
-source(paste0(UICompDirectory, "TestingTab.R"), local = TRUE)
+
+source(paste0(UICompDirectory, "Home.R"), local = TRUE)
+source(paste0(UICompDirectory, "Configurations.R"), local = TRUE)
+source(paste0(UICompDirectory, "Scratchpad.R"), local = TRUE)
 
 
 shinyUI(
@@ -20,10 +20,9 @@ shinyUI(
             navbarPage(title = "shinyscope",
               tags$div(fileInput("upload", "", accept = c(".csv"))
             ),
-            AnalysisTab,
-            StudentViewTab,
-            AssignmentView,
-            TestingTab
+            Home,
+            Configurations,
+            Scratchpad
             ),
             hr(),
             br(),
