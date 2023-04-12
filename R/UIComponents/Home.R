@@ -4,11 +4,15 @@ Home <- tabPanel(
 
   
   fluidRow(
-    h4("Home", style = "padding-left: 15px;"),
-   
+    h5("Course Grades", style = "padding-left: 15px;"),
+  
   ),
-  
-  
   mainPanel(
+  
+   
+    uiOutput("grades_table2_ui"),
+    
+    br(),
+    actionButton("download_grades_data", label = "Download")
   )
 )

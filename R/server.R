@@ -288,8 +288,27 @@ shinyServer(function(input, output, session) {
       return (createGradesTable(pivotdf(), categories$cat_table, assigns$table, processed_sids()$unique_sids$names))
     }
   })
+  output$error_grade_data_text <- renderText({
+    "Please create assignment categories first."
+  })
   
+  output$grades_table2_ui <- renderUI({
+    if (is.data.frame(categories$cat_table)) {
+      DT::dataTableOutput("grades_table2")
+    } else {
+      textOutput("error_grade_data_text")
+    }
+  })
   
+  output$grades_table2 <- renderDataTable({
+    if (is.data.frame(categories$cat_table)) {
+      print(categories$cat_table)
+      return(createGradesTable(pivotdf(), categories$cat_table, assigns$table, processed_sids()$unique_sids$names))
+    } else {
+      return(NULL)
+    }
+  })
+ 
   
   #####--------------------------------------------------------------------#####
   #####------------------------ ALL-GRADES TABLE------------------------#####
@@ -344,7 +363,7 @@ shinyServer(function(input, output, session) {
   
   
   ### !!! STILL NEED TO MODIFY TO WHAT WE WANT TO DOWNLOAD####
-  output$downloadData <- downloadHandler(
+  output$download_grades_data <- downloadHandler(
     filename = function() {
       paste("modified_data", Sys.Date(), ".csv", sep = "")
     },
