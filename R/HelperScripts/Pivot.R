@@ -13,12 +13,9 @@ pivot <- function(new_data, assignments_dataframe){
   assignments_dataframe$new_colnames <- str_replace_all(assignments_dataframe$new_colnames, "_-_raw_points", "")
   
   add_categories_to_pivot <- sxa %>%
-      left_join(assignments_dataframe %>% select(new_colnames, category), by = c("assignments" = "new_colnames"))
+      left_join(assignments_dataframe %>% select(new_colnames, colnames, category), by = c("assignments" = "new_colnames"))
   return(add_categories_to_pivot)
-# 
-#   sxa <- sxa %>%
-#     left_join(assignments(), by = "assignment") # add on the type of the assignment (and other stuff)
-#   return(sxa)
+
 }
 
 
