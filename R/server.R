@@ -383,15 +383,17 @@ shinyServer(function(input, output, session) {
   #####------------------------CSV file is named modified_data_YYYY-MM-DD.csv------------------------#####
   
   
-  ### !!! STILL NEED TO MODIFY TO WHAT WE WANT TO DOWNLOAD####
+  
   output$download_grades_data <- downloadHandler(
     filename = function() {
-      paste("course_grades", ".csv")
+      paste("course_grades_", Sys.Date(), ".csv", sep = "")
     },
     content = function(filename) {
-      write.csv(grades$table, filename)
+      write.csv(grades$table, filename, row.names = FALSE)
     })
   
+  
+
   
   #####------------------------ Disclaimer - FOOTER ------------------------#####
   output$disclaimer <- renderText({
