@@ -8,9 +8,12 @@ TestingTab <- tabPanel("Testing Tab", titlePanel("Testing"),
                       mainPanel(
                         tabsetPanel(
                           tabPanel(h4("Grading Syllabus"),
-                                   dataTableOutput("cat_table")
+                                   dataTableOutput("cat_table"),
+                          tabPanel(h4("All-Grades Table"),
+                                   actionButton("calculate_grades", label = "Calculate Class Grades"),
+                                   dataTableOutput("all_grades_table")
                           )
                         )
                       )
-)
+))
 

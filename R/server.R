@@ -9,6 +9,7 @@ source(paste0(HSLocation, "Pivot.R"))
 source(paste0(HSLocation, "ProcessSid.R"))
 source(paste0(HSLocation, "Grading.R"))
 source(paste0(HSLocation, "Dynamic_UI_Categories.R"))
+source(paste0(HSLocation, "AllGradesTable.R"))
 
 shinyServer(function(input, output, session) {
   
@@ -72,9 +73,13 @@ shinyServer(function(input, output, session) {
   
   
   #####------------------------pivot_longer function------------------------#####
+  #### USING processed_sids()$unique_sids DATAFRAME TO PROCESS PIVOT LONGER TABLE!!!
+  #### Remember, the processed_sids() returns a list of  2 dataframes, we only need the first one
+  
   pivotdf <- reactive({
-    new_data <- new_data()
-    pivot(new_data)
+    processed_sids <- processed_sids()$unique_sids
+
+    pivot(processed_sids, assigns$table)
   })
   
    output$pivotlonger <- renderDataTable({
@@ -281,6 +286,20 @@ shinyServer(function(input, output, session) {
       return (createGradesTable(pivotdf(), categories$cat_table, assigns$table, processed_sids()$unique_sids$names))
     }
   })
+  
+  
+  
+  #####--------------------------------------------------------------------#####
+  #####------------------------ ALL-GRADES TABLE------------------------#####
+  
+  observeEvent(input$calculate_grades, {
+    
+    
+    
+    
+  })
+    
+  
   
   
   #####--------------------------------------------------------------------#####

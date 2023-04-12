@@ -35,6 +35,7 @@ createAssignTable <- function(data) {
   
   # Replace all "," with ":" in the colnames to avoid the issue with selecting these assignments in creating categories.
   assignments$colnames <- str_replace_all(assignments$colnames, ",", ":")
+  assignments$new_colnames <- str_replace_all(assignments$new_colnames, ",", ":")
   
   return(assignments)
 }
