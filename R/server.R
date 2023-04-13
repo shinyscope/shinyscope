@@ -67,7 +67,8 @@ shinyServer(function(input, output, session) {
     #fix dates
     new_time <- data_new_colnames%>%
         mutate(across(contains("submission_time"), lubridate::mdy_hm), #convert to datetimes , previous format: lubridate::ymd_hms
-              across(contains("lateness"), lubridate::hms))
+              across(contains("lateness"), lubridate::hms),
+              across(contains("lateness"), as.character))
     return(new_time)
   })
   
