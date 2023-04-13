@@ -59,7 +59,7 @@ dropLowest <- function(pivot, x){
 }
 
 getCategoryGrade <- function(baby_pivot, cat_num, grading_policy, drops){
-  pivot <- dropLowest(baby_pivot, drops)
+  baby_pivot <- dropLowest(baby_pivot, drops)
   #assigns <- getValidAssigns(pivot,student, cat_table, cat_num)
   if (grading_policy == "Equally Weighted"){
     #average scores

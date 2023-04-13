@@ -7,7 +7,7 @@ modal_confirm <- modalDialog(
   footer = tagList(
     numericInput("nRow", "Enter Category Row:", 1, min = 1, step = 1),
     textInput("change_name", "Enter Category Name", value = "", width = NULL, placeholder = NULL),
-    sliderInput("change_weight", "What Weight?", min = 0, max = 1, value = 0),
+    numericInput("change_weight", "What Weight?", min = 0, max = 1, value = 0, step = 0.05),
     numericInput("change_drops", "How Many Drops:", 0, step = 1),
     radioButtons("change_policy", strong("Aggregation Method"),
                  choices = c("Equally Weighted", "Weighted by Points")),
@@ -53,7 +53,7 @@ add_new_category_modal <- modalDialog(
   title = "Add New",
   footer = tagList(
     textInput("cat_name", "Enter Category Name", value = "", width = NULL, placeholder = NULL),
-    sliderInput("weight", "How Much is This Worth?", min = 0, max = 1, value = 0.5),
+    numericInput("weight", "How Much is This Worth?", min = 0, max = 1, value = 0.5, step = 0.05),
     numericInput("num_drops", "How Many Drops:", 0, step = 1),
     radioButtons("grading_policy", strong("Aggregation Method"),
                  choices = c("Equally Weighted", "Weighted by Points")),

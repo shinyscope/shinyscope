@@ -175,10 +175,11 @@ shinyServer(function(input, output, session) {
   observeEvent(input$nRow, {
     #updates default inputs when picking different rows
     num <- input$nRow
-    updateTextInput(session, "change_name", value = categories$cat_table$Categories[num])
-    updateSliderInput(session, "change_weight", value = categories$cat_table$Weights[num])
     
-    if (!is.null(categories$cat_table)){
+    if (!is.null(categories$cat_table) && num <= nrow(categories$cat_table)){
+      updateTextInput(session, "change_name", value = categories$cat_table$Categories[num])
+      updateNumericInput(session, "change_weight", value = categories$cat_table$Weights[num])
+      
       # Preload selected values
       preloaded_values <- categories$cat_table$Assignments_Included[num]
       preloaded_values <- unlist(strsplit(preloaded_values, ", ")) # Split the string and unlist the result
@@ -390,17 +391,21 @@ shinyServer(function(input, output, session) {
   
   
   output$download_grades_data <- downloadHandler(
+    
     filename = function() {
       paste("course_grades_", Sys.Date(), ".csv", sep = "")
     },
     content = function(filename) {
-      write.csv(grades$table, filename, row.names = FALSE)
+      sid_df <- processed_sids()$unique_sids %>% select(names, sid, email, sections)
+      grades <- grades$table %>% select(Overall_Grade)
+      result = cbind(sid_df, grades)
+      write.csv(result, filename, row.names = FALSE)
     })
   
   
 
   
-  #####------------------------ Disclaimer - FOOTER ------------------------#####
+  ####------------------------ Disclaimer - FOOTER ------------------------#####
   output$disclaimer <- renderText({
     "Shinyscope, 2023"
   })
