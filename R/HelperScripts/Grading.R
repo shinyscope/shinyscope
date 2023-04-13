@@ -78,7 +78,7 @@ getOverallGrade <- function(table, cat_table){
   num_cat <- ncol(table)
   for (stud in 1:nrow(table)){
     stud_grades <- table[stud,3:num_cat]
-    table[stud, 2] <- sum(weights*stud_grades, na.rm = TRUE)/sum(weights)
+    table[stud, 2] <- round(sum(weights*stud_grades, na.rm = TRUE)/sum(weights),2)
   }
   return (table)
 }

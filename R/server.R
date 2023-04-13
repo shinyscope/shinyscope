@@ -67,10 +67,17 @@ shinyServer(function(input, output, session) {
     #fix dates
     new_time <- data_new_colnames%>%
         mutate(across(contains("submission_time"), lubridate::mdy_hm), #convert to datetimes , previous format: lubridate::ymd_hms
-              across(contains("lateness"), lubridate::hms),
+              across(contains("lateness"), convert_to_min),
               across(contains("lateness"), as.character))
     return(new_time)
   })
+  
+  convert_to_min <- function(hms){
+    save <- lubridate::hms(hms)
+    save <- period_to_seconds(save)
+    save <- save/60
+    return (save)
+  }
   
   output$data_manipulation <- renderDataTable({
     new_data()
