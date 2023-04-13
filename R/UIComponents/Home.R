@@ -11,6 +11,7 @@ Home <- tabPanel(
   
    
     #uiOutput("grades_table2_ui"),
+    actionButton("grade_all", "Calculate Overall Grade"),
     dataTableOutput("grades"),
     br(),
     downloadButton("download_grades_data", label = "Download")

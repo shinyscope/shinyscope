@@ -185,14 +185,16 @@ shinyServer(function(input, output, session) {
  
       # Update the SelectizeInput with the preloaded values
       updateRadioButtons(session, "change_clobber_boolean", selected = "No")
-      choices = setdiff(assigns$table[[2]], categories$cat_table$Assignments_Included)
-
+      #choices = setdiff(assigns$table[[2]], categories$cat_table$Assignments_Included)
+      
+      choices <- assigns$table %>% filter (category == "Unassigned") %>% select(colnames)
       prev_selected <- ""
       if (categories$cat_table$Clobber_Policy[num] != "None"){
         prev_selected <- unlist(strsplit(categories$cat_table$Clobber_Policy[num], "Clobbered with "))
         updateRadioButtons(session, "change_clobber_boolean", selected = "Yes")
 
       }
+      choices = c(choices, preloaded_values)
       updateSelectInput(session, "change_clobber", choices = categories$cat_table$Categories, selected = prev_selected)
       updateSelectizeInput(session, "change_assign", choices = choices, selected = preloaded_values) #make dropdown of assignments
     }
@@ -205,7 +207,8 @@ shinyServer(function(input, output, session) {
       assigns$table <- changeCategory(assigns$table, categories$cat_table, input$nRow)
       clobber <- getClobber(input$change_clobber_boolean, input$change_clobber)
       categories$cat_table <- updateRow(categories$cat_table, input$nRow, input$change_name, input$change_weight, input$change_assign, input$change_drops, input$change_policy, clobber)
-      
+      cat_num <- nrow(categories$cat_table)
+      grades$table <- updateCatGrade(grades$table, pivotdf(), categories$cat_table, input$nRow)
       assigns$table <- updateCategory(assigns$table, input$change_assign, input$change_name)
     }
     removeModal()
@@ -246,7 +249,9 @@ shinyServer(function(input, output, session) {
   observeEvent(input$delete, {
     if (!is.null(categories$cat_table)){
       assigns$table <- changeCategory(assigns$table, categories$cat_table, input$nRow)
-      categories$cat_table <- deleteRow(categories$cat_table, input$nRow) 
+      category <- categories$cat_table$Categories[input$nRow]
+      categories$cat_table <- deleteRow(categories$cat_table, input$nRow)
+      grades$table <- deleteCategory(grades$table, category)
     }
     removeModal()
   })
@@ -293,12 +298,19 @@ shinyServer(function(input, output, session) {
   })
   
   observeEvent(input$create, {
-    grades$table <- updateGrades(grades$table, pivotdf(), categories$cat_table)
+    cat_num <- nrow(categories$cat_table)
+    grades$table <- updateCatGrade(grades$table, pivotdf(), categories$cat_table, cat_num)
   })
   
   output$grades <- renderDataTable(
     grades$table
   )
+  
+  observeEvent(input$grade_all, {
+    if (!is.null(categories$cat_table)){
+      grades$table <- getOverallGrade(grades$table, categories$cat_table) 
+    }
+  })
   
   grades_table <- reactive({
     data <- grades$table
@@ -333,13 +345,6 @@ shinyServer(function(input, output, session) {
   
   #####--------------------------------------------------------------------#####
   #####------------------------ ALL-GRADES TABLE------------------------#####
-  
-  observeEvent(input$calculate_grades, {
-    
-    
-    
-    
-  })
     
   
   
