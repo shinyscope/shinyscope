@@ -26,6 +26,10 @@ shinyServer(function(input, output, session) {
            validate("Invalid file; Please upload a .csv or .tsv file")
     )
   })
+  
+  # alternative approach?
+  shinyFileChoose(input, 'files', root=c(root='.'), filetypes=c('', 'txt'))
+  
   #####----------------------------------------------------------------#####
   #####---------------------------ANALYSIS TAB-------------------------#####
   #####----------------------------------------------------------------#####
