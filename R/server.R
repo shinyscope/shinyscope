@@ -28,7 +28,7 @@ shinyServer(function(input, output, session) {
   })
   
   # alternative approach?
-  shinyFileChoose(input, 'files', root=c(root='.'), filetypes=c('', 'txt'))
+  #shinyFileChoose(input, 'files', root=c(root='.'), filetypes=c('', 'txt'))
   
   #####----------------------------------------------------------------#####
   #####---------------------------ANALYSIS TAB-------------------------#####
