@@ -31,13 +31,6 @@ Configurations <- tabPanel("Config",
                                                  h4("Existing Categories"),
                                                  uiOutput("dynamic_ui")
                                         ),
-                                        tabPanel("Grading Trials",
-                                                 selectInput("pick_student", "Pick a student", choices = ''),
-                                                 selectInput("pick_cat", "Pick a category", choices = ''),
-                                                 dataTableOutput("individ_grades")
-                                                # dataTableOutput("grades_table")
-                                                 
-                                        ),
                                         tabPanel("Students",
                                                  # Include Font Awesome library
                                                  tags$head(tags$link(rel = "stylesheet", href = "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css")),
@@ -54,13 +47,34 @@ Configurations <- tabPanel("Config",
                                                  # Main Panel with tabs and data tables
                                                  mainPanel(
                                                    tabsetPanel(
+                                                     tabPanel("Distributions"),
                                                      tabPanel("SID issues", dataTableOutput("duplicate_sids")),
                                                      tabPanel("All Students", dataTableOutput("students"))
                                                    )
                                                  )
+                                        ),
+                                        tabPanel("Coursewide", 
+                                                 sliderInput("A+", "A+", min = 0, max = 100, value = c(97,100), width = "100%"),
+                                                 sliderInput("A", "A", min = 0, max = 100, value = c(93,96), width = "100%"),
+                                                 sliderInput("A-", "A-", min = 0, max = 100, value = c(90,92), width = "100%"),
+                                                 sliderInput("B+", "B+", min = 0, max = 100, value = c(87,89), width = "100%"),
+                                                 sliderInput("B", "B", min = 0, max = 100, value = c(83,86), width = "100%"),
+                                                 sliderInput("B-", "B-", min = 0, max = 100, value = c(80,82), width = "100%"),
+                                                 sliderInput("C+", "C+", min = 0, max = 100, value = c(77,79), width = "100%"),
+                                                 sliderInput("C", "C", min = 0, max = 100, value = c(73,76), width = "100%"),
+                                                 sliderInput("C-", "C-", min = 0, max = 100, value = c(70,72), width = "100%")
+                                                 ),
+                                                
+                                        tabPanel("Grading Trials",
+                                                 selectInput("pick_student", "Pick a student", choices = ''),
+                                                 selectInput("pick_cat", "Pick a category", choices = ''),
+                                                 dataTableOutput("individ_grades")
+                                                 # dataTableOutput("grades_table")
+                                                 
                                         )
                                         )
                                       )
                                     )
                               )
                             )
+

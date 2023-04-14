@@ -220,7 +220,7 @@ shinyServer(function(input, output, session) {
       assigns$table <- changeCategory(assigns$table, categories$cat_table, input$nRow)
       clobber <- getClobber(input$change_clobber_boolean, input$change_clobber)
       categories$cat_table <- updateRow(categories$cat_table, input$nRow, input$change_name, input$change_weight, input$change_assign, input$change_drops, input$change_policy, clobber)
-      cat_num <- nrow(categories$cat_table)
+      #cat_num <- nrow(categories$cat_table)
       grades$table <- updateCatGrade(grades$table, pivotdf(), categories$cat_table, input$nRow)
       assigns$table <- updateCategory(assigns$table, input$change_assign, input$change_name)
     }
@@ -284,7 +284,6 @@ shinyServer(function(input, output, session) {
     dynamic_ui_categories(categories_table)
     }
   })
-
   
   
   #####--------------------------------------------------------------------#####
