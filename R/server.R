@@ -91,7 +91,7 @@ shinyServer(function(input, output, session) {
   pivotdf <- reactive({
     processed_sids <- processed_sids()$unique_sids
 
-    pivot(processed_sids, assigns$table)
+    pivot(processed_sids, assigns$table, categories$cat_table)
   })
   
    output$pivotlonger <- renderDataTable({
@@ -128,11 +128,6 @@ shinyServer(function(input, output, session) {
            '<i class="fas fa-check-circle"></i> ', num_assignments, ' assignments were imported.</div>')
   })
   
-  # output$num_assign_msg <- renderText({
-  #   #assignments <- assignments()
-  #   num_rows <- (nrow(assigns$table))
-  #   paste0('<div class="alert alert-success" role="alert"><i class="fas fa-check-circle"></i> ', num_rows, ' assignments were imported.</div>')
-  # })
   
   output$duplicates_msg <- renderText({
     dup_df <- processed_sids()$duplicates
@@ -152,7 +147,7 @@ shinyServer(function(input, output, session) {
   categories <- reactiveValues(cat_table = NULL)
   
   #####--------------------------- EDIT MODAL  ----------------------------#####
- 
+  
   #renders table of categories with respective assignments and weights
   output$cat_table <- renderDataTable({ datatable(categories$cat_table)})
   
@@ -195,23 +190,32 @@ shinyServer(function(input, output, session) {
       # Preload selected values
       preloaded_values <- categories$cat_table$Assignments_Included[num]
       preloaded_values <- unlist(strsplit(preloaded_values, ", ")) # Split the string and unlist the result
- 
+      
       # Update the SelectizeInput with the preloaded values
       updateRadioButtons(session, "change_clobber_boolean", selected = "No")
-      #choices = setdiff(assigns$table[[2]], categories$cat_table$Assignments_Included)
       
       choices <- assigns$table %>% filter (category == "Unassigned") %>% select(colnames)
       prev_selected <- ""
       if (categories$cat_table$Clobber_Policy[num] != "None"){
         prev_selected <- unlist(strsplit(categories$cat_table$Clobber_Policy[num], "Clobbered with "))
         updateRadioButtons(session, "change_clobber_boolean", selected = "Yes")
-
       }
       choices = c(choices, preloaded_values)
       updateSelectInput(session, "change_clobber", choices = categories$cat_table$Categories, selected = prev_selected)
       updateSelectizeInput(session, "change_assign", choices = choices, selected = preloaded_values) #make dropdown of assignments
+      
+      if (input$change_late_policy1 == "Yes") {
+        categories$cat_table <- updateCategoryTable(categories$cat_table, num, 
+                                                    lp1_time = input$change_lp1_time, lp1_unit = input$change_lp1_unit, lp1_deduction = input$change_lp1_deduction)
+      }
+
+      if (input$change_late_policy2 == "Yes") {
+        categories$cat_table <- updateCategoryTable(categories$cat_table, num,
+                                                    lp2_time = input$change_lp2_time, lp2_unit = input$change_lp2_unit, lp2_deduction = input$change_lp2_deduction)
+      }
     }
   })
+  
   
   #####------------------------Modal Done button ------------------------#####
   # modal closes when Done button pressed, categories are updated
@@ -219,13 +223,14 @@ shinyServer(function(input, output, session) {
     if (!is.null(categories$cat_table)){
       assigns$table <- changeCategory(assigns$table, categories$cat_table, input$nRow)
       clobber <- getClobber(input$change_clobber_boolean, input$change_clobber)
-      categories$cat_table <- updateRow(categories$cat_table, input$nRow, input$change_name, input$change_weight, input$change_assign, input$change_drops, input$change_policy, clobber)
-      #cat_num <- nrow(categories$cat_table)
+      categories$cat_table <- updateRow(categories$cat_table, input$nRow, input$change_name, input$change_weight, input$change_assign, input$change_drops, input$change_policy, clobber, input$change_lp1_time, input$change_lp1_unit, input$change_lp1_deduction, input$change_lp2_time, input$change_lp2_unit, input$change_lp2_deduction)
+      
       grades$table <- updateCatGrade(grades$table, pivotdf(), categories$cat_table, input$nRow)
       assigns$table <- updateCategory(assigns$table, input$change_assign, input$change_name)
     }
     removeModal()
   })
+  
   
   
   #####------------------------ create a new assignment category ------------------------#####
@@ -235,11 +240,30 @@ shinyServer(function(input, output, session) {
     
     # updates category table with new row with new name, weights, assignments
   clobber <- getClobber(input$clobber_boolean, input$clobber_with)
-  categories$cat_table <- updateCategoryTable(input$assign, categories$cat_table, input$cat_name, input$weight, input$num_drops, input$grading_policy, clobber)
+  print(paste0("1categories:cat_table is: ", categories$cat_table))
+  categories$cat_table <- updateCategoryTable(input$assign, categories$cat_table, input$cat_name, input$weight, 
+                                             input$num_drops, input$grading_policy, clobber,
+                                             lp1_time = input$lp1_time,
+                                             lp1_unit = input$lp1_unit, lp1_deduction = input$lp1_deduction,
+                                             lp2_time = input$lp2_time,
+                                             lp2_unit = input$lp2_unit, lp2_deduction = input$lp2_deduction)
+  
+  print(paste0("2categories:cat_table is: ", categories$cat_table))
   if (!is.null(input$assign)){
-      assigns$table <- updateCategory(assigns$table, input$assign, input$cat_name)
-      }
-  })
+    assigns$table <- updateCategory(assigns$table, input$assign, input$cat_name)
+  }
+  
+  # if (input$late_policy1 == "Yes") {
+  #   categories$cat_table <- updateCategoryTable(cat_table = categories$cat_table,lp1_time = input$lp1_time,
+  #                                               lp1_unit = input$lp1_unit, lp1_deduction = input$lp1_deduction)
+  # }
+  # 
+  # if (input$late_policy2 == "Yes") {
+  #   categories$cat_table <- updateCategoryTable(cat_table = categories$cat_table,lp2_time = input$lp2_time,
+  #                                               lp2_unit = input$lp2_unit, lp2_deduction = input$lp2_deduction)
+  # }
+   })
+  
   
     #display modal for a new assignment category
   observeEvent(input$create_category, {
@@ -358,7 +382,10 @@ shinyServer(function(input, output, session) {
   #####--------------------------------------------------------------------#####
   #####------------------------ ALL-GRADES TABLE------------------------#####
     
-  
+  output$all_grades_table <- renderDataTable({
+    pivotdf <- pivotdf()
+    AllGradesTable(pivotdf,categories$cat_table)
+  })
   
   
   #####--------------------------------------------------------------------#####

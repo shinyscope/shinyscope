@@ -1,4 +1,4 @@
-pivot <- function(new_data, assignments_dataframe){
+pivot <- function(new_data, assignments_dataframe, cat_table){
   id_cols <- c("names", "sections","email", "sid")
   
   new_data <- as.data.frame(new_data)
@@ -14,8 +14,19 @@ pivot <- function(new_data, assignments_dataframe){
   
   add_categories_to_pivot <- sxa %>%
       left_join(assignments_dataframe %>% select(new_colnames, colnames, category), by = c("assignments" = "new_colnames"))
-  return(add_categories_to_pivot)
+  print(cat_table)
+  print(add_categories_to_pivot)
+  if (!is.null(cat_table)){
+  add_cat_table_to_pivot <- add_categories_to_pivot %>%
+    left_join(cat_table %>% select(Categories, Weights, Drops, Grading_Policy), by = c("category"="Categories"))
+    return(add_cat_table_to_pivot)
+  }
+  else{
+    return(add_categories_to_pivot)
+  }
 
 }
+
+
 
 

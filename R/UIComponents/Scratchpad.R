@@ -9,10 +9,10 @@ Scratchpad <- tabPanel("Scratchpad",
                         tabsetPanel(
                           tabPanel(h5("Grading Syllabus"),
                                    dataTableOutput("cat_table")),
-                          # tabPanel(h5("All-Grades Table"),
-                          #          actionButton("calculate_grades", label = "Calculate Class Grades"),
-                          #          dataTableOutput("all_grades_table")),
-                          
+                          tabPanel(h5("All-Grades Table"),
+                                   actionButton("calculate_grades", label = "Calculate Class Grades"),
+                                   dataTableOutput("all_grades_table")),
+
                           tabPanel(h5("Analysis"),
                           mainPanel(
                             tabsetPanel(
