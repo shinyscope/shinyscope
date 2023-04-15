@@ -14,6 +14,7 @@ UICompDirectory <- "UIComponents/"
 source(paste0(UICompDirectory, "Home.R"), local = TRUE)
 source(paste0(UICompDirectory, "Configurations.R"), local = TRUE)
 source(paste0(UICompDirectory, "Scratchpad.R"), local = TRUE)
+source(paste0(UICompDirectory, "Dashboard.R"), local = TRUE)
 
 
 shinyUI(
@@ -23,6 +24,7 @@ shinyUI(
             ),
             Home,
             Configurations,
+            Dashboard,
             Scratchpad
             ),
             hr(),

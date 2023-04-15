@@ -353,7 +353,7 @@ shinyServer(function(input, output, session) {
   })
 
   
-  #####----------------------------------BINS-----------------------------#####
+  #####---------------------------GRADE BINS-----------------------------#####
 
   
   observe({
@@ -365,9 +365,38 @@ shinyServer(function(input, output, session) {
     }
   })
   
+  output$grade_dist <- renderPlot({
+      plot <- grades$table %>% 
+        ggplot(aes(x = Overall_Grade)) + geom_histogram()
+      plot
+  })
+  
   output$letter_dist <- renderPlot({
     plot <-grades$table %>% ggplot(aes(x = Letter_Grade)) +geom_bar()
     return (plot)
+  })
+  
+
+  output$cat_dist <- renderPlot({
+    if (ncol(grades$table) > 3){
+      plot <-grades$table %>% ggplot(aes_string(x = input$which_cat)) +
+        geom_histogram()
+      return (plot)
+    }
+  })
+  
+  output$assign_dist <- renderPlot({
+    pivot <- pivotdf()
+    plot <-pivot %>% 
+      filter(colnames == input$which_assign)%>%
+      mutate(score = raw_points/max_points) %>%
+      ggplot(aes(x = score)) + geom_histogram()
+    plot
+  })
+
+  observe({
+    updateSelectInput(session, "which_assign", choices = assigns$table$colnames)
+    updateSelectInput(session, "which_cat", choices = categories$cat_table$Categories)
   })
   
   
