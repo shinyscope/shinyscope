@@ -10,7 +10,6 @@ updateCategoryTable <- function(assign, cat_table, cat_name, weight, num_drops, 
   if (is.null(cat_table)){
     cat_table <- data.frame(matrix(ncol = 12, nrow = 1)) %>%
       rename(Categories = "X1", Weights = "X2", Assignments_Included = "X3", Drops = "X4", Grading_Policy = "X5", Clobber_Policy = "X6", Late_Policy1_Time = "X7", Late_Policy1_Unit = "X8",Late_Policy1_Deduction = "X9", Late_Policy2_Time = "X10", Late_Policy2_Unit = "X11",Late_Policy2_Deduction = "X12"  ) #create dataframe
-    print(paste0("cat_table: ", cat_table))
       cat_table[1,1] <- cat_name #add first row
       cat_table[1,2] <- weight
       cat_table[1,3] <- assignments
