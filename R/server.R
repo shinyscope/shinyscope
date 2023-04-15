@@ -328,8 +328,7 @@ shinyServer(function(input, output, session) {
   
   grades <- reactiveValues(table = NULL,
                            bins = data.frame(Grades = c("A", "B", "C", "D", "F"),
-                                             Lower_Bound = c(90, 80, 70, 60, 0),
-                                             Upper_Bound = c(100, 89, 79, 69, 59))
+                                             CutOff = c(90, 80, 70, 60, 0))
                            )
   observe({
     if (!is.null(data())){
@@ -337,13 +336,6 @@ shinyServer(function(input, output, session) {
     }
   })
   
-  output$bins <- renderDataTable({
-    grades$bins
-  })
-  
-  observe({
-    grades$bins <- updateBins(grades$bins, input$A, input$B, input$C, input$D, input$F)
-  })
   
   observeEvent(input$create, {
     cat_num <- nrow(categories$cat_table)
@@ -356,12 +348,29 @@ shinyServer(function(input, output, session) {
   
   observeEvent(input$grade_all, {
     if (!is.null(categories$cat_table)){
-      grades$table <- getOverallGrade(grades$table, categories$cat_table) 
+      grades$table <- getOverallGrade(grades$table, categories$cat_table, grades$bins) 
     }
   })
 
   
-  #####--------------------------------------------------------------------#####
+  #####----------------------------------BINS-----------------------------#####
+
+  
+  observe({
+    grades$bins <- updateBins(grades$bins, input$A, input$B, input$C, input$D, input$F)
+    if (!is.null(grades$table)){
+      if (grades$table[1,2] != "TBD"){
+        grades$table <- getOverallGrade(grades$table, categories$cat_table, grades$bins) 
+      }
+    }
+  })
+  
+  output$letter_dist <- renderPlot({
+    plot <-grades$table %>% ggplot(aes(x = Letter_Grade)) +geom_bar()
+    return (plot)
+  })
+  
+  
   #####------------------------ ALL-GRADES TABLE------------------------#####
     
   output$all_grades_table <- renderDataTable({
@@ -417,7 +426,7 @@ shinyServer(function(input, output, session) {
     },
     content = function(filename) {
       sid_df <- processed_sids()$unique_sids %>% select(names, sid, email, sections)
-      grades <- grades$table %>% select(Overall_Grade)
+      grades <- grades$table %>% select(Overall_Grade, Letter_Grade)
       result = cbind(sid_df, grades)
       write.csv(result, filename, row.names = FALSE)
     })

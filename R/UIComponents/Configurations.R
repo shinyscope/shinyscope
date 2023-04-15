@@ -54,12 +54,12 @@ Configurations <- tabPanel("Config",
                                                  )
                                         ),
                                         tabPanel("Coursewide", 
-                                                 dataTableOutput("bins"),
-                                                 shinyWidgets::numericRangeInput("A", "A", min = 0, max = 100, value = c(90,100), width = "100%"),
-                                                 shinyWidgets::numericRangeInput("B", "B", min = 0, max = 100, value = c(80,89), width = "100%"),
-                                                 shinyWidgets::numericRangeInput("C", "C", min = 0, max = 100, value = c(70,79), width = "100%"),
-                                                 shinyWidgets::numericRangeInput("D", "D", min = 0, max = 100, value = c(60,69), width = "100%"),
-                                                 shinyWidgets::numericRangeInput("F", "F", min = 0, max = 100, value = c(0,59), width = "100%")
+                                                 numericInput("A", "A", min = 0, max = 100, value = 90),
+                                                 numericInput("B", "B", min = 0, max = 100, value = 80),
+                                                 numericInput("C", "C", min = 0, max = 100, value = 70),
+                                                 numericInput("D", "D", min = 0, max = 100, value = 60),
+                                                 numericInput("F", "F", min = 0, max = 100, value = 0),
+                                                 plotOutput("letter_dist"),
                                         ),
                                                 
                                         tabPanel("Grading Trials",

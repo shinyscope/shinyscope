@@ -1,13 +1,22 @@
 updateBins <- function(bins_table, input_A, input_B, input_C, input_D, input_F){
-  bins_table$Lower_Bound[1] <- as.numeric(input_A[1])
-  bins_table$Upper_Bound[1] <- as.numeric(input_A[2])
-  bins_table$Lower_Bound[2] <- as.numeric(input_B[1])
-  bins_table$Upper_Bound[2] <- as.numeric(input_B[2])
-  bins_table$Lower_Bound[3] <- as.numeric(input_C[1])
-  bins_table$Upper_Bound[3] <- as.numeric(input_C[2])
-  bins_table$Lower_Bound[4] <- as.numeric(input_D[1])
-  bins_table$Upper_Bound[4] <- as.numeric(input_D[2])
-  bins_table$Lower_Bound[5] <- as.numeric(input_F[1])
-  bins_table$Upper_Bound[5] <- as.numeric(input_F[2])
+  bins_table$CutOff[1] <- as.numeric(input_A)
+  bins_table$CutOff[2] <- as.numeric(input_B)
+  bins_table$CutOff[3] <- as.numeric(input_C)
+  bins_table$CutOff[4] <- as.numeric(input_D)
+  bins_table$CutOff[5] <- as.numeric(input_F)
   return (bins_table)
+}
+
+getLetterGrade <- function(bins_table, grade){
+  if (grade >= bins_table$CutOff[1]){
+    return ("A")
+  } else if (grade >= bins_table$CutOff[2]){
+    return ("B")
+  } else if (grade >= bins_table$CutOff[3]){
+    return ("C")
+  } else if (grade >= bins_table$CutOff[4]){
+    return ("D")
+  }
+
+    return ("F")
 }

@@ -1,6 +1,7 @@
 createGradesTable <- function(names){
   
-  table <- data.frame(Students = names) %>% mutate(Overall_Grade = "TBD")
+  table <- data.frame(Students = names) %>% mutate(Overall_Grade = "TBD",
+                                                   Letter_Grade = "TBD")
   return (table)
 }
 
@@ -18,9 +19,9 @@ updateCatGrade <- function(grades_table, pivot, cat_table, cat_num){
       new_col[stud, 1] <- round(grade*100,2)
     } 
   }
-  if ((cat_num+2) <= ncol(grades_table)){
-    grades_table[, cat_num+2] <- new_col
-    colnames(grades_table)[cat_num+2] <- cat_table$Categories[cat_num]
+  if ((cat_num+3) <= ncol(grades_table)){
+    grades_table[, cat_num+3] <- new_col
+    colnames(grades_table)[cat_num+3] <- cat_table$Categories[cat_num]
     return (grades_table)
   }
   colnames(new_col) <- category
@@ -68,7 +69,7 @@ getCategoryGrade <- function(baby_pivot, cat_num, grading_policy, drops){
   return (baby_pivot %>% summarize(grade = sum(raw_points)/sum(max_points)) %>% pull(grade))
 }
 
-getOverallGrade <- function(table, cat_table){
+getOverallGrade <- function(table, cat_table, bins_table){
   weights <- as.numeric(cat_table$Weights)
   for (cat in 1:nrow(cat_table)){
     if (cat_table$Assignments_Included[cat] == ""){
@@ -77,8 +78,10 @@ getOverallGrade <- function(table, cat_table){
   }
   num_cat <- ncol(table)
   for (stud in 1:nrow(table)){
-    stud_grades <- table[stud,3:num_cat]
-    table[stud, 2] <- round(sum(weights*stud_grades, na.rm = TRUE)/sum(weights),2)
+    stud_grades <- table[stud,4:num_cat]
+    grade <- round(sum(weights*stud_grades, na.rm = TRUE)/sum(weights),2)
+    table[stud, 2] <- grade
+    table[stud, 3] <- getLetterGrade(bins_table, grade)
   }
   return (table)
 }
