@@ -54,16 +54,13 @@ Configurations <- tabPanel("Config",
                                                  )
                                         ),
                                         tabPanel("Coursewide", 
-                                                 sliderInput("A+", "A+", min = 0, max = 100, value = c(97,100), width = "100%"),
-                                                 sliderInput("A", "A", min = 0, max = 100, value = c(93,96), width = "100%"),
-                                                 sliderInput("A-", "A-", min = 0, max = 100, value = c(90,92), width = "100%"),
-                                                 sliderInput("B+", "B+", min = 0, max = 100, value = c(87,89), width = "100%"),
-                                                 sliderInput("B", "B", min = 0, max = 100, value = c(83,86), width = "100%"),
-                                                 sliderInput("B-", "B-", min = 0, max = 100, value = c(80,82), width = "100%"),
-                                                 sliderInput("C+", "C+", min = 0, max = 100, value = c(77,79), width = "100%"),
-                                                 sliderInput("C", "C", min = 0, max = 100, value = c(73,76), width = "100%"),
-                                                 sliderInput("C-", "C-", min = 0, max = 100, value = c(70,72), width = "100%")
-                                                 ),
+                                                 dataTableOutput("bins"),
+                                                 shinyWidgets::numericRangeInput("A", "A", min = 0, max = 100, value = c(90,100), width = "100%"),
+                                                 shinyWidgets::numericRangeInput("B", "B", min = 0, max = 100, value = c(80,89), width = "100%"),
+                                                 shinyWidgets::numericRangeInput("C", "C", min = 0, max = 100, value = c(70,79), width = "100%"),
+                                                 shinyWidgets::numericRangeInput("D", "D", min = 0, max = 100, value = c(60,69), width = "100%"),
+                                                 shinyWidgets::numericRangeInput("F", "F", min = 0, max = 100, value = c(0,59), width = "100%")
+                                        ),
                                                 
                                         tabPanel("Grading Trials",
                                                  selectInput("pick_student", "Pick a student", choices = ''),

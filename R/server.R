@@ -10,6 +10,7 @@ source(paste0(HSLocation, "ProcessSid.R"))
 source(paste0(HSLocation, "Grading.R"))
 source(paste0(HSLocation, "Dynamic_UI_Categories.R"))
 source(paste0(HSLocation, "AllGradesTable.R"))
+source(paste0(HSLocation, "Distributions.R"))
 
 shinyServer(function(input, output, session) {
   
@@ -325,12 +326,23 @@ shinyServer(function(input, output, session) {
     }
   })
   
-  grades <- reactiveValues(table = NULL)
-  
+  grades <- reactiveValues(table = NULL,
+                           bins = data.frame(Grades = c("A", "B", "C", "D", "F"),
+                                             Lower_Bound = c(90, 80, 70, 60, 0),
+                                             Upper_Bound = c(100, 89, 79, 69, 59))
+                           )
   observe({
     if (!is.null(data())){
-      grades$table <- createGradesTable(processed_sids()$unique_sids$names) 
+      grades$table <- createGradesTable(processed_sids()$unique_sids$names)
     }
+  })
+  
+  output$bins <- renderDataTable({
+    grades$bins
+  })
+  
+  observe({
+    grades$bins <- updateBins(grades$bins, input$A, input$B, input$C, input$D, input$F)
   })
   
   observeEvent(input$create, {
@@ -347,37 +359,7 @@ shinyServer(function(input, output, session) {
       grades$table <- getOverallGrade(grades$table, categories$cat_table) 
     }
   })
-  
-  grades_table <- reactive({
-    data <- grades$table
-    return (data)
-    })
-  # output$grades_table <- renderDataTable({
-  #   if (!is.null(categories$cat_table)){
-  #     return (createGradesTable(pivotdf(), categories$cat_table, assigns$table, processed_sids()$unique_sids$names))
-  #   }
-  # })
-  # output$error_grade_data_text <- renderText({
-  #   "Please create assignment categories first."
-  # })
-  # 
-  # output$grades_table2_ui <- renderUI({
-  #   if (is.data.frame(categories$cat_table)) {
-  #     DT::dataTableOutput("grades_table2")
-  #   } else {
-  #     textOutput("error_grade_data_text")
-  #   }
-  # })
-  # 
-  # output$grades_table2 <- renderDataTable({
-  #   if (is.data.frame(categories$cat_table)) {
-  #     print(categories$cat_table)
-  #     return(createGradesTable(pivotdf(), categories$cat_table, assigns$table, processed_sids()$unique_sids$names))
-  #   } else {
-  #     return(NULL)
-  #   }
-  # })
- 
+
   
   #####--------------------------------------------------------------------#####
   #####------------------------ ALL-GRADES TABLE------------------------#####
