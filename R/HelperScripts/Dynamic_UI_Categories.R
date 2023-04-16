@@ -23,13 +23,13 @@ dynamic_ui_categories <- function(categories_table){
     )
     
     late_policy1_text <- if (late_policy1_time > 0) {
-      paste(late_policy1_time, late_policy1_unit, "after deadline", late_policy1_deduction*100, "% deduction")
+      paste(late_policy1_time, late_policy1_unit, "after deadline", late_policy1_deduction, "% deduction")
     } else {
       "No late policies listed."
     }
     
     late_policy2_text <- if (late_policy2_time > 0) {
-      paste(late_policy2_time, late_policy2_unit, "after deadline", late_policy2_deduction*100, "% deduction")
+      paste(late_policy2_time, late_policy2_unit, "after deadline", late_policy2_deduction, "% deduction")
     } else {
       NULL
     }
