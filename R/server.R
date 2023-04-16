@@ -371,6 +371,7 @@ shinyServer(function(input, output, session) {
   
   output$grade_dist <- renderPlot({
       plot <- grades$table %>% 
+        mutate(Overall_Grade = as.integer(Overall_Grade)) %>%
         ggplot(aes(x = Overall_Grade)) + geom_histogram()
       plot
   })
