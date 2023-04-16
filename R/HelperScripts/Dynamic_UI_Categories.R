@@ -8,12 +8,6 @@ dynamic_ui_categories <- function(categories_table){
     drops <- categories_table[i,4]
     grading_policy <- categories_table[i,5]
     clobber <- categories_table[i,6]
-    late_policy1_time <- categories_table[i,7]
-    late_policy1_unit <- categories_table[i,8]
-    late_policy1_deduction <- categories_table[i,9]
-    late_policy2_time <- categories_table[i,10]
-    late_policy2_unit <- categories_table[i,11]
-    late_policy2_deduction <- categories_table[i,12]
     
     category_html <- paste0(
       '<div class="navbar navbar-expand-lg navbar-light bg-light" style="padding: 10px;">',
@@ -22,17 +16,17 @@ dynamic_ui_categories <- function(categories_table){
       '</div>'
     )
     
-    late_policy1_text <- if (late_policy1_time > 0) {
-      paste(late_policy1_time, late_policy1_unit, "after deadline", late_policy1_deduction, "% deduction")
-    } else {
-      "No late policies listed."
-    }
-    
-    late_policy2_text <- if (late_policy2_time > 0) {
-      paste(late_policy2_time, late_policy2_unit, "after deadline", late_policy2_deduction, "% deduction")
-    } else {
-      NULL
-    }
+    # late_policy1_text <- if (late_policy1_time > 0) {
+    #   paste(late_policy1_time, late_policy1_unit, "after deadline", late_policy1_deduction, "% deduction")
+    # } else {
+    #   "No late policies listed."
+    # }
+    # 
+    # late_policy2_text <- if (late_policy2_time > 0) {
+    #   paste(late_policy2_time, late_policy2_unit, "after deadline", late_policy2_deduction, "% deduction")
+    # } else {
+    #   NULL
+    # }
     
     tagList(
       HTML(category_html),
@@ -45,7 +39,7 @@ dynamic_ui_categories <- function(categories_table){
           p(strong("Drops:"), style = "margin-bottom: 5px;"),
           p(strong("Grading Policy:"), style = "margin-bottom: 5px;"),
           p(strong("Clobber Policy:"), style = "margin-bottom: 5px;"),
-          p(strong("Late Policy:"), style = "margin-bottom: 5px;"),
+         # p(strong("Late Policy:"), style = "margin-bottom: 5px;"),
           p(strong("Assignments Included:"), style = "margin-bottom: 5px;")
         ),
         div(
@@ -54,11 +48,11 @@ dynamic_ui_categories <- function(categories_table){
           p(paste(drops), style = "margin-bottom: 5px;"),
           p(paste(grading_policy), style = "margin-bottom: 5px;"),
           p(paste(clobber), style = "margin-bottom: 5px;"),
-          p(paste(late_policy1_text), style = "margin-bottom: 5px;"),
-          if (!is.null(late_policy2_text)) {
-            p(paste(late_policy2_text), style = "margin-bottom: 5px;")
-          },
-          p(paste(assignments), style = "margin-bottom: 5px;")
+          # p(paste(late_policy1_text), style = "margin-bottom: 5px;"),
+          # if (!is.null(late_policy2_text)) {
+          #   p(paste(late_policy2_text), style = "margin-bottom: 5px;")
+          # },
+          # p(paste(assignments), style = "margin-bottom: 5px;")
         )
       ),
       

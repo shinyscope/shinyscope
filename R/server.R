@@ -189,31 +189,6 @@ shinyServer(function(input, output, session) {
     if (!is.null(categories$cat_table) && num <= nrow(categories$cat_table)){
       updateTextInput(session, "change_name", value = categories$cat_table$Categories[num])
       updateNumericInput(session, "change_weight", value = categories$cat_table$Weights[num])
-     
-      #Late Policy 1
-       if (categories$cat_table$Late_Policy1_Time[num] != 0 ){
-          updateRadioButtons(session, "change_late_policy1", selected = "Yes")
-          updateNumericInput(session, "change_lp1_time", value = categories$cat_table$Late_Policy1_Time[num])
-          updateSelectizeInput(session, "change_lp1_unit", selected = categories$cat_table$Late_Policy1_Unit[num])
-          updateNumericInput(session, "change_lp1_deduction", value = categories$cat_table$Late_Policy1_Deduction[num])
-       }
-      #Late Policy 2
-      if (categories$cat_table$Late_Policy2_Time[num] != 0 ){
-          updateRadioButtons(session, "change_late_policy2", selected = "Yes")
-          updateNumericInput(session, "change_lp2_time", value = categories$cat_table$Late_Policy2_Time[num])
-          updateSelectizeInput(session, "change_lp2_unit", selected  = categories$cat_table$Late_Policy2_Unit[num])
-          updateNumericInput(session, "change_lp2_deduction", value = categories$cat_table$Late_Policy2_Deduction[num])
-      }
-
-      # 
-      # if (input$change_late_policy1 == "Yes") {
-      #   categories$cat_table <- updateCategoryTable(categories$cat_table, num,
-      #                                               lp1_time = input$change_lp1_time, lp1_unit = input$change_lp1_unit, lp1_deduction = input$change_lp1_deduction)
-      # }
-      # if (input$change_late_policy2 == "Yes") {
-      #   categories$cat_table <- updateCategoryTable(categories$cat_table, num,
-      #                                               lp2_time = input$change_lp2_time, lp2_unit = input$change_lp2_unit, lp2_deduction = input$change_lp2_deduction)
-      # }
       
       # Preload selected values
       preloaded_values <- categories$cat_table$Assignments_Included[num]
@@ -242,7 +217,7 @@ shinyServer(function(input, output, session) {
     if (!is.null(categories$cat_table)){
       assigns$table <- changeCategory(assigns$table, categories$cat_table, input$nRow)
       clobber <- getClobber(input$change_clobber_boolean, input$change_clobber)
-      categories$cat_table <- updateRow(categories$cat_table, input$nRow, input$change_name, input$change_weight, input$change_assign, input$change_drops, input$change_policy, clobber, input$change_lp1_time, input$change_lp1_unit, input$change_lp1_deduction, input$change_lp2_time, input$change_lp2_unit, input$change_lp2_deduction)
+      categories$cat_table <- updateRow(categories$cat_table, input$nRow, input$change_name, input$change_weight, input$change_assign, input$change_drops, input$change_policy, clobber)
       
       grades$table <- updateCatGrade(grades$table, pivotdf(), categories$cat_table, input$nRow)
       assigns$table <- updateCategory(assigns$table, input$change_assign, input$change_name)
@@ -261,9 +236,7 @@ shinyServer(function(input, output, session) {
   clobber <- getClobber(input$clobber_boolean, input$clobber_with)
 
   categories$cat_table <- updateCategoryTable(input$assign, categories$cat_table, input$cat_name, input$weight, 
-                                             input$num_drops, input$grading_policy, clobber,
-                                             lp1_time = input$lp1_time,lp1_unit = input$lp1_unit, lp1_deduction = input$lp1_deduction,
-                                             lp2_time = input$lp2_time,lp2_unit = input$lp2_unit, lp2_deduction = input$lp2_deduction)
+                                             input$num_drops, input$grading_policy, clobber)
   
   if (!is.null(input$assign)){
     assigns$table <- updateCategory(assigns$table, input$assign, input$cat_name)

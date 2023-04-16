@@ -1,34 +1,22 @@
 #updates the category table or creates a new one if it's the first row
-updateCategoryTable <- function(assign, cat_table, cat_name, weight, num_drops, grading_policy, clobber, 
-                                lp1_time = NULL, lp1_unit = NULL, lp1_deduction = NULL,
-                                lp2_time = NULL, lp2_unit = NULL, lp2_deduction = NULL){
+updateCategoryTable <- function(assign, cat_table, cat_name, weight, num_drops, grading_policy, clobber){
    assignments <- ""
   if (!is.null(assign)){
     assignments <- stringr::str_c(assign, collapse = ", ") # creates string of assignments 
   }
   
   if (is.null(cat_table)){
-    cat_table <- data.frame(matrix(ncol = 12, nrow = 1)) %>%
-      rename(Categories = "X1", Weights = "X2", Assignments_Included = "X3", Drops = "X4", Grading_Policy = "X5", Clobber_Policy = "X6", Late_Policy1_Time = "X7", Late_Policy1_Unit = "X8",Late_Policy1_Deduction = "X9", Late_Policy2_Time = "X10", Late_Policy2_Unit = "X11",Late_Policy2_Deduction = "X12"  ) #create dataframe
+    cat_table <- data.frame(matrix(ncol = 6, nrow = 1)) %>%
+      rename(Categories = "X1", Weights = "X2", Assignments_Included = "X3", Drops = "X4", Grading_Policy = "X5", Clobber_Policy = "X6") #create dataframe
       cat_table[1,1] <- cat_name #add first row
       cat_table[1,2] <- weight
       cat_table[1,3] <- assignments
       cat_table[1,4] <- num_drops
       cat_table[1,5] <- grading_policy
       cat_table[1,6] <- clobber
-      cat_table[1,7] <- lp1_time
-      cat_table[1,8] <- lp1_unit
-      cat_table[1,9] <- lp1_deduction
-      cat_table[1,10] <- lp2_time
-      cat_table[1,11] <- lp2_unit
-      cat_table[1,12] <- lp2_deduction
-      new_row <- c(cat_name, weight, assignments, num_drops, grading_policy, clobber,
-                   lp1_time, lp1_unit, lp1_deduction, lp2_time, lp2_unit, lp2_deduction)
   } else {
    
-    new_row <- c(cat_name, weight, assignments, num_drops, grading_policy, clobber,
-                 lp1_time, lp1_unit, lp1_deduction, lp2_time, lp2_unit, lp2_deduction)
-    cat_table <- rbind(cat_table, new_row)
+    cat_table <- rbind(cat_table, c(cat_name, weight, assignments, num_drops, grading_policy, clobber)) #add new column
   }
    return(cat_table)
 }
@@ -55,9 +43,13 @@ createAssignTable <- function(data) {
 
 #updates assignments in assignment table when they are assigned a category
 updateCategory <- function(assignments, assign, cat_name){
-  selected <- data.frame(colnames = assign)
-  selected <- semi_join(assignments, selected, "colnames") %>% mutate(category = cat_name)
-  assignments <- rbind(selected, anti_join(assignments, selected, "colnames"))
+  if (is.null(assign)){
+    assignments <- assignments %>% mutate(category = cat_name)
+  } else {
+    selected <- data.frame(colnames = assign)
+    selected <- semi_join(assignments, selected, "colnames") %>% mutate(category = cat_name)
+    assignments <- rbind(selected, anti_join(assignments, selected, "colnames"))
+  }
   return (assignments)
 }
 
