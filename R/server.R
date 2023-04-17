@@ -206,6 +206,18 @@ shinyServer(function(input, output, session) {
       choices = c(choices, preloaded_values)
       updateSelectInput(session, "change_clobber", choices = categories$cat_table$Categories, selected = prev_selected)
       updateSelectizeInput(session, "change_assign", choices = choices, selected = preloaded_values) #make dropdown of assignments
+      if (categories$cat_table$Late_Policy[num] != "None"){
+        policy <- as.character(categories$cat_table$Late_Policy[num])
+        prev_policy <- unlist(str_split(policy, ";"))
+        updateRadioButtons(session, "change_late_boolean", selected = "Yes")
+        shinyTime::updateTimeInput(session, "change_late_a", value = as.POSIXct(prev_policy[2],format="%T"))
+        updateNumericInput(session, "change_late_p", value = prev_policy[2])
+        if (length(prev_policy) == 4){
+          updateRadioButtons(session, "change_late_boolean2", selected = "Yes")
+          updateNumericInput(session, "change_late_p2", value = prev_policy[4])
+        }
+      }
+      
       
     }
   })
