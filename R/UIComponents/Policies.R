@@ -1,4 +1,4 @@
-Configurations <- tabPanel("Config",
+Policies <- tabPanel("Policies",
                            fluidRow(
                              column(width = 4,
                                     helpText("Classify assignment types, implement grading policies, 

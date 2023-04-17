@@ -1,5 +1,5 @@
 # load libraries
-
+library(plotly)
 
 #load helper scripts
 HSLocation <- "HelperScripts/"
@@ -353,36 +353,54 @@ shinyServer(function(input, output, session) {
       }
     }
   })
+
   
-  output$grade_dist <- renderPlot({
-      plot <- grades$table %>% 
-        mutate(Overall_Grade = as.integer(Overall_Grade)) %>%
-        ggplot(aes(x = Overall_Grade)) + geom_histogram(bins = 15, color = "red", fill = "pink") +
-        ggtitle("Distribution of Overall Grades") + xlab("Individual Grades") +
-        theme(plot.title = element_text(color="red", size=25, face="bold.italic"))
-      plot
-  })
-  
+  ### GGPLOT in Coursewide - a plot about the GRADE BINS - A,B,C,D,F
   output$letter_dist <- renderPlot({
-    plot <-grades$table %>% ggplot(aes(x = Letter_Grade)) +geom_bar() + theme_bw()
+    plot <-grades$table %>% ggplot(aes(x = Letter_Grade)) +geom_bar()
     return (plot)
   })
   
-
+  #####---------------------------DASHBOARD-----------------------------#####
+  
+  ### GGPLOT on a overall grades 
+  output$grade_dist <- renderPlot({
+    plot <- grades$table %>% 
+      mutate(Overall_Grade = as.integer(Overall_Grade)) %>%
+      ggplot(aes(x = Overall_Grade)) + geom_histogram(binwidth = 10, color = "grey", fill = "lightgrey") +
+      ggtitle("Distribution of Overall Grades") + xlab("Individual Grades") +
+      theme_bw()
+    plot
+  })
+  
+  ### GGPLOT on a distribution of a category of choice
   output$cat_dist <- renderPlot({
     if (ncol(grades$table) > 4){
       plot <-grades$table %>% ggplot(aes_string(x = input$which_cat)) +
-        geom_histogram(color = "darkblue", fill = "cadetblue1") + 
+        geom_histogram(fill = "cadetblue1") + 
         ggtitle(paste0("Distribution of ", input$which_cat))
       return (plot)
     }
   })
   
-  output$studentConcerns <- renderUI(
-    if (!is.null(grades$table) && ncol(grades$table > 3)){
-     HTML(markdown::renderMarkdown(text = paste(paste0("- ", getStudentConcerns(grades$table, grades$bins$CutOff[4]), "\n"), collapse = "")))
-    } 
-  )
+  ### GGPLOT on a distribution of an Assignement of choice
+  observe({
+    updateSelectInput(session, "which_assign", choices = assigns$table$colnames)
+    updateSelectInput(session, "which_cat", choices = categories$cat_table$Categories)
+  })
+  
+  output$assign_dist <- renderPlot({
+    pivot <- pivotdf()
+    plot <-pivot %>% 
+      filter(colnames == input$which_assign)%>%
+      mutate(score = raw_points/max_points) %>%
+      ggplot(aes(x = score)) + geom_histogram(color = "darkblue", fill = "cadetblue1") + ggtitle(paste0("Distribution of ", input$which_assign))
+    plot
+  })
+  
+
+  
+  ### UI with TEXT about Course Stats & Students with Low Scores
   
   output$studentStats <- renderUI(
     if (!is.null(grades$table) && ncol(grades$table > 3)){
@@ -390,6 +408,13 @@ shinyServer(function(input, output, session) {
     } 
   )
   
+  output$studentConcerns <- renderUI(
+    if (!is.null(grades$table) && ncol(grades$table > 3)){
+     HTML(markdown::renderMarkdown(text = paste(paste0("- ", getStudentConcerns(grades$table, grades$bins$CutOff[4]), "\n"), collapse = "")))
+    } 
+  )
+  
+  ### GGPLOT on a distribution of a category of choice
   output$assign_dist <- renderPlot({
     pivot <- pivotdf()
     plot <-pivot %>% 
@@ -425,45 +450,9 @@ shinyServer(function(input, output, session) {
   })
   
   
-  #####--------------------------------------------------------------------#####
-  
 
   
-  #####------------------------Manipulate dataframe------------------------#####
-  modified_data <- reactiveVal(NULL)
-  
-  
-  #####------------------------select columns & calculate the mean------------------------##### 
-  
-  
-  #it seems to calculate the mean correctly
-  
-  result <- eventReactive(input$calculate, {
-    dataframe <- data()
-    columns <- dataframe[,input$cols]
-    dataframe$mean <- rowMeans(columns)
-    #
-    return(dataframe)
-  })
-  
-  
-  #####------------------------select columns & calculate the mean------------------------##### 
-  observe({
-    numeric_cols <- colnames(data())[sapply(data(), is.numeric)] #this only selects numeric columns
-    updateSelectizeInput(session, "cols", choices =  numeric_cols) # all columns: updateSelectizeInput(session, "cols", choices = colnames(data()))
-  })
-  
-  
-  #####------------------------Download File------------------------#####
-  observeEvent(input$upload, {
-    output$downloadBtn <- renderUI({
-      downloadButton("downloadData", "Download Data")
-    })
-  })
-  
-  #####------------------------CSV file is named modified_data_YYYY-MM-DD.csv------------------------#####
-  
-  
+  #####------------------------Download Grades File------------------------#####
   
   output$download_grades_data <- downloadHandler(
     
@@ -477,11 +466,10 @@ shinyServer(function(input, output, session) {
       write.csv(result, filename, row.names = FALSE)
     })
   
-  
 
   
   ####------------------------ Disclaimer - FOOTER ------------------------#####
   output$disclaimer <- renderText({
-    "Shinyscope, 2023"
+    "Gradebook, 2023"
   })
 })

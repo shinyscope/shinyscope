@@ -11,20 +11,18 @@ library(shinyFiles)
 #Create UI Comps
 UICompDirectory <- "UIComponents/"
 
-source(paste0(UICompDirectory, "Home.R"), local = TRUE)
-source(paste0(UICompDirectory, "Configurations.R"), local = TRUE)
+source(paste0(UICompDirectory, "Policies.R"), local = TRUE)
 source(paste0(UICompDirectory, "Scratchpad.R"), local = TRUE)
 source(paste0(UICompDirectory, "Dashboard.R"), local = TRUE)
 
 
 shinyUI(
   fluidPage(theme = bs_theme(version = 5, bootswatch = "minty"),
-            navbarPage(title = "shinyscope",
+            navbarPage(title = "Gradebook",
               tags$div(fileInput("upload", "", accept = c(".csv"))
             ),
-            Home,
-            Configurations,
             Dashboard,
+            Policies,
             Scratchpad
             ),
             hr(),
