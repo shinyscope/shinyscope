@@ -20,3 +20,25 @@ getLetterGrade <- function(bins_table, grade){
 
     return ("F")
 }
+
+getStudentConcerns <- function(grades_table, f){
+  save <- grades_table %>% filter(as.integer(Overall_Grade) < f) %>%
+    mutate(Concerns = paste0(Students, " (score: ", Overall_Grade, ")"))
+  if (!is.null(save)){
+    return (save$Concerns)
+  }
+  return ("No student concerns here")
+}
+
+getGradeStats <- function(grades_table){
+  mean <- paste0("Mean: ", mean(as.numeric(grades_table$Overall_Grade)))
+  median <- paste0("Mean: ", median(as.numeric(grades_table$Overall_Grade)))
+  sd <- paste0("Standard Deviation: ", sd(grades_table$Overall_Grade))
+  stats <- c(mean,median, sd)
+  for (x in 4:ncol(grades_table)){
+    name <- colnames(grades_table)[x]
+    mean <- mean(as.numeric(grades_table[,x]))
+    stats <- append(stats, paste0(name, " Mean : ", mean))
+  }
+  return (stats)
+}

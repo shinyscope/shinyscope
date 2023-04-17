@@ -357,7 +357,9 @@ shinyServer(function(input, output, session) {
   output$grade_dist <- renderPlot({
       plot <- grades$table %>% 
         mutate(Overall_Grade = as.integer(Overall_Grade)) %>%
-        ggplot(aes(x = Overall_Grade)) + geom_histogram()
+        ggplot(aes(x = Overall_Grade)) + geom_histogram(bins = 15, color = "red", fill = "pink") +
+        ggtitle("Distribution of Overall Grades") + xlab("Individual Grades") +
+        theme(plot.title = element_text(color="red", size=25, face="bold.italic"))
       plot
   })
   
@@ -368,19 +370,32 @@ shinyServer(function(input, output, session) {
   
 
   output$cat_dist <- renderPlot({
-    if (ncol(grades$table) > 3){
+    if (ncol(grades$table) > 4){
       plot <-grades$table %>% ggplot(aes_string(x = input$which_cat)) +
-        geom_histogram()
+        geom_histogram(color = "darkblue", fill = "cadetblue1") + 
+        ggtitle(paste0("Distribution of ", input$which_cat))
       return (plot)
     }
   })
+  
+  output$studentConcerns <- renderUI(
+    if (!is.null(grades$table) && ncol(grades$table > 3)){
+     HTML(markdown::renderMarkdown(text = paste(paste0("- ", getStudentConcerns(grades$table, grades$bins$CutOff[4]), "\n"), collapse = "")))
+    } 
+  )
+  
+  output$studentStats <- renderUI(
+    if (!is.null(grades$table) && ncol(grades$table > 3)){
+      HTML(markdown::renderMarkdown(text = paste(paste0("", getGradeStats(grades$table), '<br/>'), collapse = "")))
+    } 
+  )
   
   output$assign_dist <- renderPlot({
     pivot <- pivotdf()
     plot <-pivot %>% 
       filter(colnames == input$which_assign)%>%
       mutate(score = raw_points/max_points) %>%
-      ggplot(aes(x = score)) + geom_histogram()
+      ggplot(aes(x = score)) + geom_histogram(color = "darkblue", fill = "cadetblue1") + ggtitle(paste0("Distribution of ", input$which_assign))
     plot
   })
 
