@@ -85,32 +85,33 @@ shinyServer(function(input, output, session) {
   
   #####------------------------DASHBOARD - TEXT DYNAMIC------------------------#####
   
-  # Create reactive values for the welcome, policies, and summary tabs
-  states <- reactiveValues(show_welcome = TRUE, show_policies = FALSE, show_summary = FALSE)
-  
-  # Update the show_policies value 
-  observe({
-    if (is.null(categories$cat_table)) {
-      states$show_policies <- TRUE
-    } else {
-      states$show_policies <- FALSE
-    }
-  })
-  # Update the show_summary value 
-  observeEvent(input$create, {
-    if(nrow(categories$cat_table) > 1){
-      states$show_summary <- TRUE 
-    } else{
-      states$show_summary <- FALSE
-    }
-  })
-  # Update the show_welcome value when a file is uploaded
-  observeEvent(input$upload, {
-    if (!is.null(input$upload)) {
-      states$show_welcome <- FALSE
-    }
-  })
+  # # Create reactive values for the welcome, policies, and summary tabs
+  # states <- reactiveValues(show_welcome = TRUE, show_pols = FALSE, show_summary = FALSE)
+  # 
+  # # Update the show_policies value
+  # observe({
+  #   if (is.null(categories$cat_table)) {
+  #     states$show_pols <- TRUE
+  #   } else {
+  #     states$show_pols <- FALSE
+  #   }
+  # })
+  # # Update the show_summary value
+  # observeEvent(input$create, {
+  #   if(nrow(categories$cat_table) > 1){
+  #     states$show_summary <- TRUE
+  #   } else{
+  #     states$show_summary <- FALSE
+  #   }
+  # })
+  # # Update the show_welcome value when a file is uploaded
+  # observeEvent(input$upload, {
+  #   if (!is.null(input$upload)) {
+  #     states$show_welcome <- FALSE
+  #   }
+  # })
 
+  
 
   #####------------------------pivot_longer function------------------------#####
   #### USING processed_sids()$unique_sids DATAFRAME TO PROCESS PIVOT LONGER TABLE!!!
