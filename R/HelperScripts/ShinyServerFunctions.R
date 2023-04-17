@@ -51,8 +51,7 @@ modal_confirm <- modalDialog(
 
 #update a row in category table
 updateRow <- function(cat_table, row, name, weight, assignments, num_drops, grading_policy, clobber, 
-                      lp1_time = NULL, lp1_unit = NULL, lp1_deduction = NULL, 
-                      lp2_time = NULL, lp2_unit = NULL, lp2_deduction = NULL){
+                      late){
   
   if (!is.null(cat_table) && row <= nrow(cat_table)){
     cat_table[row, 1] <- name
@@ -61,6 +60,7 @@ updateRow <- function(cat_table, row, name, weight, assignments, num_drops, grad
     cat_table[row, 4] <- num_drops
     cat_table[row, 5] <- grading_policy
     cat_table[row, 6] <- clobber
+    cat_table[row, 7] <- late
   }
   
   return (cat_table)

@@ -1,22 +1,23 @@
 #updates the category table or creates a new one if it's the first row
-updateCategoryTable <- function(assign, cat_table, cat_name, weight, num_drops, grading_policy, clobber){
+updateCategoryTable <- function(assign, cat_table, cat_name, weight, num_drops, grading_policy, clobber, late){
    assignments <- ""
   if (!is.null(assign)){
     assignments <- stringr::str_c(assign, collapse = ", ") # creates string of assignments 
   }
   
   if (is.null(cat_table)){
-    cat_table <- data.frame(matrix(ncol = 6, nrow = 1)) %>%
-      rename(Categories = "X1", Weights = "X2", Assignments_Included = "X3", Drops = "X4", Grading_Policy = "X5", Clobber_Policy = "X6") #create dataframe
+    cat_table <- data.frame(matrix(ncol = 7, nrow = 1)) %>%
+      rename(Categories = "X1", Weights = "X2", Assignments_Included = "X3", Drops = "X4", Grading_Policy = "X5", Clobber_Policy = "X6", Late_Policy = "X7") #create dataframe
       cat_table[1,1] <- cat_name #add first row
       cat_table[1,2] <- weight
       cat_table[1,3] <- assignments
       cat_table[1,4] <- num_drops
       cat_table[1,5] <- grading_policy
       cat_table[1,6] <- clobber
+      cat_table[1,7] <- late
   } else {
    
-    cat_table <- rbind(cat_table, c(cat_name, weight, assignments, num_drops, grading_policy, clobber)) #add new column
+    cat_table <- rbind(cat_table, c(cat_name, weight, assignments, num_drops, grading_policy, clobber, late)) #add new column
   }
    return(cat_table)
 }
@@ -95,4 +96,17 @@ getClobber<- function(clobber_boolean, clobber_assign){
   } else {
     return (paste0("Clobbered with ", clobber_assign))
   }
+}
+
+getLatePolicy <- function(late_boolean, late_boolean2, late_a, late_a2, deduction, deduction2){
+  policy <- "None"
+  if (late_boolean == "Yes"){
+    late_a <- as.character(lubridate::hms(strftime(late_a, "%T")))
+    policy <- paste(late_a, deduction, sep = ";")
+  }
+  if (late_boolean2 == "Yes"){
+    late_a2 <- as.character(lubridate::hms(strftime(late_a2, "%T")))
+    policy <- paste(policy, late_a2, deduction2, sep = ";")
+  }
+  return (policy)
 }

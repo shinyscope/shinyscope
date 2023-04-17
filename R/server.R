@@ -217,8 +217,8 @@ shinyServer(function(input, output, session) {
     if (!is.null(categories$cat_table)){
       assigns$table <- changeCategory(assigns$table, categories$cat_table, input$nRow)
       clobber <- getClobber(input$change_clobber_boolean, input$change_clobber)
-      categories$cat_table <- updateRow(categories$cat_table, input$nRow, input$change_name, input$change_weight, input$change_assign, input$change_drops, input$change_policy, clobber)
-      
+      late <- getLatePolicy(input$change_late_boolean, input$change_late_boolean2, input$change_late_a, input$change_late_a2, input$change_late_p, input$change_late_p2)
+      categories$cat_table <- updateRow(categories$cat_table, input$nRow, input$change_name, input$change_weight, input$change_assign, input$change_drops, input$change_policy, clobber, late)
       grades$table <- updateCatGrade(grades$table, pivotdf(), categories$cat_table, input$nRow)
       assigns$table <- updateCategory(assigns$table, input$change_assign, input$change_name)
     }
@@ -234,9 +234,9 @@ shinyServer(function(input, output, session) {
     
     # updates category table with new row with new name, weights, assignments
   clobber <- getClobber(input$clobber_boolean, input$clobber_with)
-
+  late <- getLatePolicy(input$late_boolean, input$late_boolean2, input$late_allowed, input$late_allowed2, input$late_penalty, input$late_penalty2)
   categories$cat_table <- updateCategoryTable(input$assign, categories$cat_table, input$cat_name, input$weight, 
-                                             input$num_drops, input$grading_policy, clobber)
+                                             input$num_drops, input$grading_policy, clobber, late)
   
   if (!is.null(input$assign)){
     assigns$table <- updateCategory(assigns$table, input$assign, input$cat_name)
