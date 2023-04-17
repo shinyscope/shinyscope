@@ -364,7 +364,7 @@ shinyServer(function(input, output, session) {
   })
   
   output$letter_dist <- renderPlot({
-    plot <-grades$table %>% ggplot(aes(x = Letter_Grade)) +geom_bar()
+    plot <-grades$table %>% ggplot(aes(x = Letter_Grade)) +geom_bar() + theme_bw()
     return (plot)
   })
   
