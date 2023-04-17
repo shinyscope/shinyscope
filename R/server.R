@@ -1,5 +1,4 @@
 # load libraries
-library(plotly)
 
 #load helper scripts
 HSLocation <- "HelperScripts/"
@@ -45,7 +44,7 @@ shinyServer(function(input, output, session) {
     read.table(input$upload$datapath, sep = ",", header = TRUE, fill=TRUE)
     }
       })
-  
+
   #####------------------------takes reactive data output ------------------------#####
   #####------------------------and creates a reactive assignment table------------#####
   assignments <- reactive({
@@ -84,7 +83,35 @@ shinyServer(function(input, output, session) {
     new_data()
   })
   
+  #####------------------------DASHBOARD - TEXT DYNAMIC------------------------#####
   
+  # Create reactive values for the welcome, policies, and summary tabs
+  states <- reactiveValues(show_welcome = TRUE, show_policies = FALSE, show_summary = FALSE)
+  
+  # Update the show_policies value 
+  observe({
+    if (is.null(categories$cat_table)) {
+      states$show_policies <- TRUE
+    } else {
+      states$show_policies <- FALSE
+    }
+  })
+  # Update the show_summary value 
+  observeEvent(input$create, {
+    if(nrow(categories$cat_table) > 1){
+      states$show_summary <- TRUE 
+    } else{
+      states$show_summary <- FALSE
+    }
+  })
+  # Update the show_welcome value when a file is uploaded
+  observeEvent(input$upload, {
+    if (!is.null(input$upload)) {
+      states$show_welcome <- FALSE
+    }
+  })
+
+
   #####------------------------pivot_longer function------------------------#####
   #### USING processed_sids()$unique_sids DATAFRAME TO PROCESS PIVOT LONGER TABLE!!!
   #### Remember, the processed_sids() returns a list of  2 dataframes, we only need the first one
@@ -367,7 +394,7 @@ shinyServer(function(input, output, session) {
   output$grade_dist <- renderPlot({
     plot <- grades$table %>% 
       mutate(Overall_Grade = as.integer(Overall_Grade)) %>%
-      ggplot(aes(x = Overall_Grade)) + geom_histogram(binwidth = 10, color = "grey", fill = "lightgrey") +
+      ggplot(aes(x = Overall_Grade)) + geom_histogram( color = "grey", fill = "lightgrey") +
       ggtitle("Distribution of Overall Grades") + xlab("Individual Grades") +
       theme_bw()
     plot

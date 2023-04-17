@@ -1,6 +1,6 @@
 Dashboard <- tabPanel("Dashboard",
                       conditionalPanel(
-                        condition = "!input.upload",
+                        condition = "output.states.show_welcome",
                         div(
                           h1("Welcome to the Gradebook!"),
                           p("Gradebook allows you to calculate, analyze, and visualize your course grades."),
@@ -9,14 +9,14 @@ Dashboard <- tabPanel("Dashboard",
                         )
                       ),
                       conditionalPanel(
-                        condition = "input.upload",
+                        condition = "output.states.show_policies",
                         div(
                           h1("Great!"),
                           p("Now go to the next tab 'Policies' to create your syllabus.")
                         )
                       ),
                       conditionalPanel(
-                        condition = "input.upload && input.create",
+                        condition = "output.states.show_summary",
                         h1("Course Summary Statistics", style = "padding-left: 15px;"),
                         fluidRow(
                           column(8,
