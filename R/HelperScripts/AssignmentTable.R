@@ -26,6 +26,15 @@ updateCategoryTable <- function(assign, cat_table, cat_name, weight, num_drops, 
 createAssignTable <- function(data) {
   gs_cols <- names(data)
   
+  #TEMPORARY SOLUTION FOR DIFFERING COLNAMES
+  
+  #data 88E specific
+  if (gs_cols[1] == "Name"){
+    gs_cols[1] <- "Names"
+  }
+  
+  #stat 20 specific - TBD
+  
   assignments <- tibble(colnames = gs_cols) %>%
     #General regex to rename assignments and add a column "category" in table
     mutate(new_colnames = str_replace_all(tolower(colnames), "[\\s:]+", "_"),

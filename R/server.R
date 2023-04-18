@@ -260,6 +260,7 @@ shinyServer(function(input, output, session) {
       late <- getLatePolicy(input$change_late_boolean, input$change_late_boolean2, input$change_late_a, input$change_late_a2, input$change_late_p, input$change_late_p2)
       categories$cat_table <- updateRow(categories$cat_table, input$nRow, input$change_name, input$change_weight, input$change_assign, input$change_drops, input$change_policy, clobber, late)
       grades$table <- updateCatGrade(grades$table, pivotdf(), categories$cat_table, input$nRow)
+      grades$table <- getOverallGrade(grades$table, categories$cat_table, grades$bins)
       assigns$table <- updateCategory(assigns$table, input$change_assign, input$change_name)
     }
     removeModal()
@@ -357,17 +358,12 @@ shinyServer(function(input, output, session) {
   observeEvent(input$create, {
     cat_num <- nrow(categories$cat_table)
     grades$table <- updateCatGrade(grades$table, pivotdf(), categories$cat_table, cat_num)
+    grades$table <- getOverallGrade(grades$table, categories$cat_table, grades$bins)
   })
   
   output$grades <- renderDataTable(
     grades$table
   )
-  
-  observeEvent(input$grade_all, {
-    if (!is.null(categories$cat_table)){
-      grades$table <- getOverallGrade(grades$table, categories$cat_table, grades$bins) 
-    }
-  })
 
   
   #####---------------------------GRADE BINS-----------------------------#####

@@ -21,7 +21,9 @@ Scratchpad <- tabPanel("Scratchpad",
                                   tabPanel(h6("Pivot Longer Table"),
                                              dataTableOutput("pivotlonger")), #displays assignment table
                                   tabPanel(h6("Original Data"),
-                                             dataTableOutput("data"))
+                                             dataTableOutput("data")),
+                                  tabPanel(h6("Grades Tables"),
+                                           dataTableOutput("grades"))
                             
                           ))
                         )))
