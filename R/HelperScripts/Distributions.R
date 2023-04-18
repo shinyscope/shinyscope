@@ -29,7 +29,6 @@ getStudentConcerns <- function(grades_table, f){
   }
   return ("No student concerns here")
 }
-
 getGradeStats <- function(grades_table){
   mean <- paste0("Mean: ", round(mean(as.numeric(grades_table$Overall_Grade)),2))
   median <- paste0("Median: ", median(as.numeric(grades_table$Overall_Grade)))
@@ -37,8 +36,11 @@ getGradeStats <- function(grades_table){
   stats <- c(mean,median, sd)
   for (x in 4:ncol(grades_table)){
     name <- colnames(grades_table)[x]
-    mean <- mean(as.numeric(grades_table[,x]))
-    stats <- append(stats, paste0(name, " Mean : ", round(mean, 2)))
+    values <- as.numeric(grades_table[,x])
+    if (any(!is.na(values))) {
+      mean_value <- mean(values, na.rm = TRUE)
+      stats <- append(stats, paste0("Category ", tools::toTitleCase(name), " Mean : ", round(mean_value, 2)))
+    }
   }
   return (stats)
 }

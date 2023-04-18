@@ -86,6 +86,47 @@ shinyServer(function(input, output, session) {
   #####------------------------DASHBOARD - DYNAMIC UI------------------------#####
   
   # Creates a reactive UI that shows the course statistics gives at least one category is added
+  course_stats_html <- reactive(if(!is.null(grades$table) && ncol(grades$table) > 3)
+  {
+    stats <- getGradeStats(grades$table)
+    category_stats <- ""
+    for (i in 4:length(stats)) {
+      if (!is.na(stats[i])) {
+        category_stats <- paste0(category_stats, '<p class="card-text">',  names(stats)[i], stats[i], '</p>')
+      }
+    }
+    paste0(
+      '<div class="card border-light mb-3">',
+      '<div class="card-header">Course Stats</div>',
+      '<div class="card-body">',
+      '<p class="card-text">',stats[1],'</p>',
+      '<p class="card-text">',stats[2],'</p>',
+      '<p class="card-text">',stats[3],'</p>',
+      category_stats,
+      '</div>',
+      '</div>'
+    )
+  })
+  
+  student_concerns_html <- reactive(if(!is.null(grades$table) && ncol(grades$table) > 3)
+  {
+    student_concerns <- getStudentConcerns(grades$table, grades$bins$CutOff[4])
+    paste0(
+      '<div class="card border-light mb-3">',
+      '<div class="card-header">Students with Low Scores:</div>',
+      '<div class="card-body">',
+      '<ul style="padding-left: 0;">',
+      '<ul>',
+      paste(sapply(student_concerns, function(concern) {
+        paste("<li>", concern, "</li>", sep = "")
+      }), collapse = ""),
+      '</ul>',
+      '</div>',
+      '</div>'
+    )
+  })
+  
+  
   
   dashboard_ui <- reactive({
     if (!is.null(grades$table) && ncol(grades$table) > 3)
@@ -93,35 +134,39 @@ shinyServer(function(input, output, session) {
       tagList(
         h6("Here are your summary statistics for your course so far. If you would like to download your course grades, click the download button below."),
         downloadButton("download_grades_data"),
-        fluidRow(
-          column(8,
-                 plotOutput("grade_dist", width = "100%", height = "100%")
-          ),
-          column(4,
-                 selectInput("which_cat", "Pick a Category", choices = categories$cat_table$Categories),
-                 plotOutput("cat_dist"),
-          ),
-        ),
+       
         fluidRow(
           column(4,
-                 selectInput("which_assign", "Pick an Assignment", choices = assigns$table$colnames),
-                 plotOutput("assign_dist")
-          ),
-          column(2,
+                 HTML(course_stats_html()),
+                 HTML(student_concerns_html()),
                  br(),
           ),
-          column(4,
-                 style='background-color:#D3D3D3;',
-                 h5("Course Stats:"),
-                 uiOutput("studentStats"),
-                 h5("Students with Low Scores:"),
-                 uiOutput("studentConcerns"))
+          column(8,
+                 mainPanel(
+                   tabsetPanel(
+                     tabPanel("All Grades Distributions",
+                              plotOutput("grade_dist")
+                              
+                     ),
+                     
+                     tabPanel("Per Category", 
+                              selectInput("which_cat", "Pick a Category", choices = categories$cat_table$Categories),
+                              plotOutput("cat_dist"),
+                     ),
+                     tabPanel("Per Assignment",
+                              selectInput("which_assign", "Pick an Assignment", choices = assigns$table$colnames),
+                              plotOutput("assign_dist")
+                     )
+                   )
+                 )
+          )
         )
       )
-    
+          
+      
     } else if (!is.null(input$upload)){
       tagList(
-        h6(paste0("Thank you! You have uploaded a datast with ", nrow(assigns$table), " assignments and ", nrow(grades$table), " students.")),
+        h6(paste0("Thank you! You have uploaded a dataset with ", nrow(assigns$table), " assignments and ", nrow(grades$table), " students.")),
         h6("Go into the 'Policies' tab above and fill in the grading criteria for each category."),
         h6("Once you're done, return to this 'Dashboard' page to see your course statistics.")
       )
@@ -130,6 +175,7 @@ shinyServer(function(input, output, session) {
       h6("Welcome to GradeBook! To begin, upload your Gradescope csv by clicking the 'Browse' button above.")
     }
   })
+  
   #render dashboard UI
   output$dashboard <- renderUI({ dashboard_ui()  })
 
@@ -453,18 +499,18 @@ shinyServer(function(input, output, session) {
   
   ### UI with TEXT about Course Stats & Students with Low Scores
   
-  output$studentStats <- renderUI(
-    if (!is.null(grades$table) && ncol(grades$table > 3)){
-      HTML(markdown::renderMarkdown(text = paste(paste0("", getGradeStats(grades$table), '<br/>'), collapse = "")))
-    } 
-  )
-  
-  # creates list of student concerns (i.e. students with an F)
-  output$studentConcerns <- renderUI(
-    if (!is.null(grades$table) && ncol(grades$table > 3)){
-     HTML(markdown::renderMarkdown(text = paste(paste0("- ", getStudentConcerns(grades$table, grades$bins$CutOff[4]), "\n"), collapse = "")))
-    } 
-  )
+  # output$studentStats <- renderUI(
+  #   if (!is.null(grades$table) && ncol(grades$table > 3)){
+  #     HTML(markdown::renderMarkdown(text = paste(paste0("", getGradeStats(grades$table), '<br/>'), collapse = "")))
+  #   } 
+  # )
+  # 
+  # # creates list of student concerns (i.e. students with an F)
+  # output$studentConcerns <- renderUI(
+  #   if (!is.null(grades$table) && ncol(grades$table > 3)){
+  #    HTML(markdown::renderMarkdown(text = paste(paste0("- ", getStudentConcerns(grades$table, grades$bins$CutOff[4]), "\n"), collapse = "")))
+  #   } 
+  # )
 
   #####------------------------ ALL-GRADES TABLE------------------------#####
   #   
