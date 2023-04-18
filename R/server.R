@@ -71,8 +71,8 @@ shinyServer(function(input, output, session) {
               across(contains("lateness"), as.character))
     return(new_time)
   })
-  
-  convert_to_min <- function(hms){
+# this allows lubridate values to be saved in the dataframe
+    convert_to_min <- function(hms){
     save <- lubridate::hms(hms)
     save <- period_to_seconds(save)
     save <- save/60
@@ -83,11 +83,9 @@ shinyServer(function(input, output, session) {
     new_data()
   })
   
-  #####------------------------DASHBOARD - TEXT DYNAMIC------------------------#####
+  #####------------------------DASHBOARD - DYNAMIC UI------------------------#####
   
-  # # Create reactive values for the welcome, policies, and summary tabs
-  # states <- reactiveValues(show_welcome = TRUE, show_pols = FALSE, show_summary = FALSE)
-  # 
+  # Creates a reactive UI that shows the course statistics gives at least one category is added
   
   dashboard_ui <- reactive({
     if (!is.null(grades$table) && ncol(grades$table) > 3)
@@ -132,15 +130,8 @@ shinyServer(function(input, output, session) {
       h6("Welcome to GradeBook! To begin, upload your Gradescope csv by clicking the 'Browse' button above.")
     }
   })
-  
-  output$dashboard <- renderUI({
-
-    dashboard_ui()
-    
-  })
-  
-
-  
+  #render dashboard UI
+  output$dashboard <- renderUI({ dashboard_ui()  })
 
   #####------------------------pivot_longer function------------------------#####
   #### USING processed_sids()$unique_sids DATAFRAME TO PROCESS PIVOT LONGER TABLE!!!
@@ -151,9 +142,7 @@ shinyServer(function(input, output, session) {
 
     pivot(processed_sids, assigns$table, categories$cat_table)
   })
-  
-  
-  
+
    output$pivotlonger <- renderDataTable({
     pivotdf()
   })
@@ -311,6 +300,10 @@ shinyServer(function(input, output, session) {
   if (!is.null(input$assign)){
     assigns$table <- updateCategory(assigns$table, input$assign, input$cat_name)
   }
+  cat_num <- nrow(categories$cat_table)
+  grades$table <- updateCatGrade(grades$table, pivotdf(), categories$cat_table, cat_num)
+  grades$table <- getOverallGrade(grades$table, categories$cat_table, grades$bins)
+  removeModal()
   })
   
     #display modal for a new assignment category
@@ -322,10 +315,6 @@ shinyServer(function(input, output, session) {
       {choices <- assigns$table %>% filter (category == "Unassigned") %>% select(colnames)} 
       updateSelectizeInput(session, "assign", choices = choices)
       updateSelectInput(session, "clobber_with", choices = categories$cat_table$Categories)
-  })
-  
-  observeEvent(input$create, {
-    removeModal()
   })
   
   
@@ -360,18 +349,7 @@ shinyServer(function(input, output, session) {
   
   #####--------------------------------------------------------------------#####
   #####------------------------ Grading ------------------------#####
-  observe({
-    updateSelectInput(session, "pick_student", choices = processed_sids()$unique_sids$names)
-    updateSelectInput(session, "pick_cat", choices = categories$cat_table$Categories)
-  })
-  
-  
-  output$individ_grades <- renderDataTable({
-    if (!is.null(categories$cat_table)){
-      cat_num <- which(categories$cat_table$Categories == input$pick_cat)
-      return (getValidAssigns(pivotdf(),input$pick_student, categories$cat_table, cat_num))
-    }
-  })
+
   
   grades <- reactiveValues(table = NULL,
                            bins = data.frame(Grades = c("A", "B", "C", "D", "F"),
@@ -383,13 +361,6 @@ shinyServer(function(input, output, session) {
     }
   })
   
-  
-  observeEvent(input$create, {
-    cat_num <- nrow(categories$cat_table)
-    grades$table <- updateCatGrade(grades$table, pivotdf(), categories$cat_table, cat_num)
-    grades$table <- getOverallGrade(grades$table, categories$cat_table, grades$bins)
-  })
-  
   output$grades <- renderDataTable(
     grades$table
   )
@@ -397,7 +368,7 @@ shinyServer(function(input, output, session) {
   
   #####---------------------------GRADE BINS-----------------------------#####
 
-  
+  #reactively updates grade bins
   observe({
     grades$bins <- updateBins(grades$bins, input$A, input$B, input$C, input$D, input$F)
     if (!is.null(grades$table)){
@@ -407,8 +378,10 @@ shinyServer(function(input, output, session) {
     }
   })
   
+  #renders grade bin UI
   output$grade_bin_percent <- renderUI({ grade_bin_pct()})
   
+  #reactive grade bin text for percentages per letter grade
   grade_bin_pct <- reactive({
     if (!is.null(grades$table) && ncol(grades$table) > 3){
       tagList(
@@ -486,18 +459,13 @@ shinyServer(function(input, output, session) {
     } 
   )
   
+  # creates list of student concerns (i.e. students with an F)
   output$studentConcerns <- renderUI(
     if (!is.null(grades$table) && ncol(grades$table > 3)){
      HTML(markdown::renderMarkdown(text = paste(paste0("- ", getStudentConcerns(grades$table, grades$bins$CutOff[4]), "\n"), collapse = "")))
     } 
   )
 
-  observe({
-    updateSelectInput(session, "which_assign", choices = assigns$table$colnames)
-    updateSelectInput(session, "which_cat", choices = categories$cat_table$Categories)
-  })
-  
-  
   #####------------------------ ALL-GRADES TABLE------------------------#####
   #   
   # output$all_grades_table <- renderDataTable({
@@ -516,9 +484,6 @@ shinyServer(function(input, output, session) {
       data.frame()
     }
   })
-  
-  
-
   
   #####------------------------Download Grades File------------------------#####
   

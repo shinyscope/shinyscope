@@ -59,8 +59,6 @@ Policies <- tabPanel("Policies",
                                         tabPanel("Students",
                                                  # Include Font Awesome library
                                                  tags$head(tags$link(rel = "stylesheet", href = "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css")),
-                                                 
-                                                 
                                                  # Data Summary row
                                                  fluidRow(
                                                    
