@@ -19,7 +19,8 @@ Policies <- tabPanel("Policies",
                                                  br(),
                                                  helpText("Each assignment from Gradescope can be classified in terms of its type",
                                                           "(problem set, lab, quiz, etc). Add assignment types below, classify each",
-                                                          "assignment according to its type, and determine the type-specific grading options."),
+                                                          "assignment according to its type, and determine the type-specific grading options.",
+                                                          "To set or change grade bins, go to the 'Coursewide' tab above."),
                                                  br(),
                                                  br(),
                                                  fluidRow(column(width = 6, 
@@ -31,19 +32,43 @@ Policies <- tabPanel("Policies",
                                                  h4("Existing Categories"),
                                                  uiOutput("dynamic_ui")
                                         ),
+                                      
+                                        tabPanel("Coursewide", 
+                                                 fluidRow(
+                                                   plotOutput("letter_dist"),
+                                                   helpText("Toggling these values below change the lower-bound cutoff for each letter grade.",
+                                                            "Below each is the percentage of students with that respective letter grade."),
+                                                   column(2,
+                                                          numericInput("F", "F", min = 0, max = 100, value = 0), 
+                                                   ),
+                                                   column(2,
+                                                          numericInput("D", "D", min = 0, max = 100, value = 60),
+                                                   ),
+                                                   column(2,
+                                                          numericInput("C", "C", min = 0, max = 100, value = 70),
+                                                          ),
+                                                   column(2,
+                                                          numericInput("B", "B", min = 0, max = 100, value = 80),
+                                                   ),
+                                                   column(2,
+                                                          numericInput("A", "A", min = 0, max = 100, value = 90), 
+                                                   ),
+                                                 ),
+                                                 uiOutput("grade_bin_percent")
+                                        ),
                                         tabPanel("Students",
                                                  # Include Font Awesome library
                                                  tags$head(tags$link(rel = "stylesheet", href = "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css")),
-                
-
+                                                 
+                                                 
                                                  # Data Summary row
                                                  fluidRow(
-                  
+                                                   
                                                    column(width = 12, htmlOutput("num_assign_msg")),
                                                    column(width = 12, htmlOutput("num_students_msg")),
                                                    column(width = 12, htmlOutput("duplicates_msg"))
                                                  ),
-
+                                                 
                                                  # Main Panel with tabs and data tables
                                                  mainPanel(
                                                    tabsetPanel(
@@ -52,34 +77,6 @@ Policies <- tabPanel("Policies",
                                                      tabPanel("All Students", dataTableOutput("students"))
                                                    )
                                                  )
-                                        ),
-                                        tabPanel("Coursewide", 
-                                                 fluidRow(
-                                                   column(2,
-                                                          numericInput("A", "A", min = 0, max = 100, value = 90), 
-                                                          ),
-                                                   column(2,
-                                                          numericInput("B", "B", min = 0, max = 100, value = 80),
-                                                          ),
-                                                   column(2,
-                                                          numericInput("C", "C", min = 0, max = 100, value = 70),
-                                                          ),
-                                                   column(2,
-                                                          numericInput("D", "D", min = 0, max = 100, value = 60),
-                                                          ),
-                                                   column(2,
-                                                          numericInput("F", "F", min = 0, max = 100, value = 0), 
-                                                          ),
-                                                 ),
-                                                 plotOutput("letter_dist"),
-                                        ),
-                                                
-                                        tabPanel("Grading Trials",
-                                                 selectInput("pick_student", "Pick a student", choices = ''),
-                                                 selectInput("pick_cat", "Pick a category", choices = ''),
-                                                 dataTableOutput("individ_grades")
-                                                 # dataTableOutput("grades_table")
-                                                 
                                         )
                                         )
                                       )

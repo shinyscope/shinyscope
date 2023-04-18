@@ -406,11 +406,39 @@ shinyServer(function(input, output, session) {
       }
     }
   })
-
+  
+  output$grade_bin_percent <- renderUI({ grade_bin_pct()})
+  
+  grade_bin_pct <- reactive({
+    if (!is.null(grades$table) && ncol(grades$table) > 3){
+      tagList(
+        fluidRow(
+          column(2,
+                 h6(paste0(round(mean(grades$table$Letter_Grade == "F")*100,2), " %"))
+                 ),
+          column(2,
+                 h6(paste0(round(mean(grades$table$Letter_Grade == "D")*100,2), " %"))
+          ),
+          column(2,
+                 h6(paste0(round(mean(grades$table$Letter_Grade == "C")*100,2), " %"))
+          ),
+          column(2,
+                 h6(paste0(round(mean(grades$table$Letter_Grade == "B")*100,2), " %"))
+          ),
+          column(2,
+                 h6(paste0(round(mean(grades$table$Letter_Grade == "A")*100,2), " %"))
+          ),
+        )
+      )
+    }
+  })
   
   ### GGPLOT in Coursewide - a plot about the GRADE BINS - A,B,C,D,F
   output$letter_dist <- renderPlot({
-    plot <-grades$table %>% ggplot(aes(x = Letter_Grade)) +geom_bar()
+    plot <-grades$table %>% ggplot(aes(x = as.integer(Overall_Grade))) +geom_histogram() +
+      geom_rug(alpha = .35) + labs(x = "Grade (out of 100)") + xlim(0, 110) +
+      geom_vline(xintercept = grades$bins$CutOff, color = "goldenrod", lwd = 1.5) +
+      theme_minimal()
     return (plot)
   })
   
