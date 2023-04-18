@@ -134,6 +134,7 @@ shinyServer(function(input, output, session) {
       tagList(
         fluidRow(
           column(4,
+                 h3("Course Summary Statistics"),
                  HTML(course_stats_html()),
                  HTML(student_concerns_html()),
                  br(),
@@ -142,20 +143,29 @@ shinyServer(function(input, output, session) {
                  mainPanel(
                    tabsetPanel(
                      tabPanel("All Grades Distributions",
+                              br(),
+                              br(),
                               plotOutput("grade_dist")
                      ),
                      tabPanel("Per Category", 
+                              br(),
                               selectInput("which_cat", "Pick a Category", choices = categories$cat_table$Categories),
                               plotOutput("cat_dist"),
                      ),
                      tabPanel("Per Assignment",
+                              br(),
                               selectInput("which_assign", "Pick an Assignment", choices = assigns$table$colnames),
                               plotOutput("assign_dist")
                      ),
                      tabPanel("Grades Table",
-                                dataTableOutput("grades_table"),
-                                h6("If you would like to download your course grades, click the download button below."),
-                                downloadButton("download_grades_data"),
+                              br(),
+                              h6("If you would like to download your course grades, click the download button below."),
+                              downloadButton("download_grades_data"),
+                              br(),
+                              br(),
+                              h4("Overall Grades Table"),
+                              dataTableOutput("grades_table")
+                                
                      )
                    )
                  )
