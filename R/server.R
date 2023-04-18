@@ -494,7 +494,36 @@ shinyServer(function(input, output, session) {
       write.csv(result, filename, row.names = FALSE)
     })
   
+  
+  
+  #####---------------------------JSON CONFIG FILES---------------------------#####
+  
+  #####------------------------CAT_TABLE TO JSON FILES------------------------#####
+  
+  #create a path to make a folder
+  path <- "gradebook-data"
+  dir.create(path, showWarnings = FALSE)
 
+  #save config
+  observeEvent(input$save_config, {
+    req(!is.null(categories$cat_table))
+    cat_table <- categories$cat_table
+    jsonlite::write_json(cat_table, paste(path, "cat_table.json", sep = "/"))
+  })
+  
+  
+  #####-------------------------JSON TO CAT_TABLE --------------------------#####
+  
+  #load config
+  observeEvent(input$load_config, {
+    if (file.exists(paste(path, "cat_table.json", sep = "/"))) {
+      df <- jsonlite::fromJSON(paste(path, "cat_table.json", sep = "/"))
+      categories$cat_table <- df
+    } else {
+      print("File not found")
+    }
+  })
+  
   
   ####------------------------ Disclaimer - FOOTER ------------------------#####
   output$disclaimer <- renderText({
