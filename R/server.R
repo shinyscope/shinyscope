@@ -88,28 +88,57 @@ shinyServer(function(input, output, session) {
   # # Create reactive values for the welcome, policies, and summary tabs
   # states <- reactiveValues(show_welcome = TRUE, show_pols = FALSE, show_summary = FALSE)
   # 
-  # # Update the show_policies value
-  # observe({
-  #   if (is.null(categories$cat_table)) {
-  #     states$show_pols <- TRUE
-  #   } else {
-  #     states$show_pols <- FALSE
-  #   }
-  # })
-  # # Update the show_summary value
-  # observeEvent(input$create, {
-  #   if(nrow(categories$cat_table) > 1){
-  #     states$show_summary <- TRUE
-  #   } else{
-  #     states$show_summary <- FALSE
-  #   }
-  # })
-  # # Update the show_welcome value when a file is uploaded
-  # observeEvent(input$upload, {
-  #   if (!is.null(input$upload)) {
-  #     states$show_welcome <- FALSE
-  #   }
-  # })
+  
+  dashboard_ui <- reactive({
+    if (!is.null(grades$table) && ncol(grades$table) > 3)
+    {
+      tagList(
+        h6("Here are your summary statistics for your course so far. If you would like to download your course grades, click the download button below."),
+        downloadButton("download_grades_data"),
+        fluidRow(
+          column(8,
+                 plotOutput("grade_dist", width = "100%", height = "100%")
+          ),
+          column(4,
+                 selectInput("which_cat", "Pick a Category", choices = categories$cat_table$Categories),
+                 plotOutput("cat_dist"),
+          ),
+        ),
+        fluidRow(
+          column(4,
+                 selectInput("which_assign", "Pick an Assignment", choices = assigns$table$colnames),
+                 plotOutput("assign_dist")
+          ),
+          column(2,
+                 br(),
+          ),
+          column(4,
+                 style='background-color:#D3D3D3;',
+                 h5("Course Stats:"),
+                 uiOutput("studentStats"),
+                 h5("Students with Low Scores:"),
+                 uiOutput("studentConcerns"))
+        )
+      )
+    
+    } else if (!is.null(input$upload)){
+      tagList(
+        h6(paste0("Thank you! You have uploaded a datast with ", nrow(assigns$table), " assignments and ", nrow(grades$table), " students.")),
+        h6("Go into the 'Policies' tab above and fill in the grading criteria for each category."),
+        h6("Once you're done, return to this 'Dashboard' page to see your course statistics.")
+      )
+    } 
+    else {
+      h6("Welcome to GradeBook! To begin, upload your Gradescope csv by clicking the 'Browse' button above.")
+    }
+  })
+  
+  output$dashboard <- renderUI({
+
+    dashboard_ui()
+    
+  })
+  
 
   
 
@@ -401,24 +430,21 @@ shinyServer(function(input, output, session) {
   output$cat_dist <- renderPlot({
     if (ncol(grades$table) > 4){
       plot <-grades$table %>% ggplot(aes_string(x = input$which_cat)) +
-        geom_histogram(fill = "cadetblue1") + 
+        geom_histogram() + theme_bw() +
         ggtitle(paste0("Distribution of ", input$which_cat))
       return (plot)
     }
   })
   
-  ### GGPLOT on a distribution of an Assignement of choice
-  observe({
-    updateSelectInput(session, "which_assign", choices = assigns$table$colnames)
-    updateSelectInput(session, "which_cat", choices = categories$cat_table$Categories)
-  })
-  
+  ### GGPLOT on a distribution of an Assignment of choice
+
   output$assign_dist <- renderPlot({
     pivot <- pivotdf()
     plot <-pivot %>% 
       filter(colnames == input$which_assign)%>%
       mutate(score = raw_points/max_points) %>%
-      ggplot(aes(x = score)) + geom_histogram(color = "darkblue", fill = "cadetblue1") + ggtitle(paste0("Distribution of ", input$which_assign))
+      ggplot(aes(x = score)) + geom_histogram() + theme_bw() +
+      ggtitle(paste0("Distribution of ", input$which_assign))
     plot
   })
   
@@ -437,16 +463,6 @@ shinyServer(function(input, output, session) {
      HTML(markdown::renderMarkdown(text = paste(paste0("- ", getStudentConcerns(grades$table, grades$bins$CutOff[4]), "\n"), collapse = "")))
     } 
   )
-  
-  ### GGPLOT on a distribution of a category of choice
-  output$assign_dist <- renderPlot({
-    pivot <- pivotdf()
-    plot <-pivot %>% 
-      filter(colnames == input$which_assign)%>%
-      mutate(score = raw_points/max_points) %>%
-      ggplot(aes(x = score)) + geom_histogram(color = "darkblue", fill = "cadetblue1") + ggtitle(paste0("Distribution of ", input$which_assign))
-    plot
-  })
 
   observe({
     updateSelectInput(session, "which_assign", choices = assigns$table$colnames)

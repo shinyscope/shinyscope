@@ -31,14 +31,14 @@ getStudentConcerns <- function(grades_table, f){
 }
 
 getGradeStats <- function(grades_table){
-  mean <- paste0("Mean: ", mean(as.numeric(grades_table$Overall_Grade)))
-  median <- paste0("Mean: ", median(as.numeric(grades_table$Overall_Grade)))
-  sd <- paste0("Standard Deviation: ", sd(grades_table$Overall_Grade))
+  mean <- paste0("Mean: ", round(mean(as.numeric(grades_table$Overall_Grade)),2))
+  median <- paste0("Median: ", median(as.numeric(grades_table$Overall_Grade)))
+  sd <- paste0("Standard Deviation: ", round(sd(grades_table$Overall_Grade),2))
   stats <- c(mean,median, sd)
   for (x in 4:ncol(grades_table)){
     name <- colnames(grades_table)[x]
     mean <- mean(as.numeric(grades_table[,x]))
-    stats <- append(stats, paste0(name, " Mean : ", mean))
+    stats <- append(stats, paste0(name, " Mean : ", round(mean, 2)))
   }
   return (stats)
 }
