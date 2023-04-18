@@ -37,10 +37,9 @@ getGradeStats <- function(grades_table){
   for (x in 4:ncol(grades_table)){
     name <- colnames(grades_table)[x]
     values <- as.numeric(grades_table[,x])
-    if (any(!is.na(values))) {
-      mean_value <- mean(values, na.rm = TRUE)
-      stats <- append(stats, paste0("Category ", tools::toTitleCase(name), " Mean : ", round(mean_value, 2)))
-    }
+    mean <- mean(values, na.rm = TRUE)
+    stats <- append(stats, paste0("Category ", tools::toTitleCase(name), " Mean : ", round(mean, 2)))
+    
   }
   return (stats)
 }

@@ -132,9 +132,6 @@ shinyServer(function(input, output, session) {
     if (!is.null(grades$table) && ncol(grades$table) > 3)
     {
       tagList(
-        h6("Here are your summary statistics for your course so far. If you would like to download your course grades, click the download button below."),
-        downloadButton("download_grades_data"),
-       
         fluidRow(
           column(4,
                  HTML(course_stats_html()),
@@ -146,9 +143,7 @@ shinyServer(function(input, output, session) {
                    tabsetPanel(
                      tabPanel("All Grades Distributions",
                               plotOutput("grade_dist")
-                              
                      ),
-                     
                      tabPanel("Per Category", 
                               selectInput("which_cat", "Pick a Category", choices = categories$cat_table$Categories),
                               plotOutput("cat_dist"),
@@ -156,6 +151,11 @@ shinyServer(function(input, output, session) {
                      tabPanel("Per Assignment",
                               selectInput("which_assign", "Pick an Assignment", choices = assigns$table$colnames),
                               plotOutput("assign_dist")
+                     ),
+                     tabPanel("Grades Table",
+                                dataTableOutput("grades_table"),
+                                h6("If you would like to download your course grades, click the download button below."),
+                                downloadButton("download_grades_data"),
                      )
                    )
                  )
@@ -412,6 +412,18 @@ shinyServer(function(input, output, session) {
   )
 
   
+  #####------------------------ GRADE TABLE ON DASHBOARD TAB ------------------------#####
+  grades_table <- reactive({
+    sid_df <- processed_sids()$unique_sids %>% select(names, sid, email, sections)
+    grades <- grades$table %>% select(Overall_Grade, Letter_Grade)
+    result = cbind(sid_df, grades)
+    
+    return(result)
+  })
+  output$grades_table <- renderDataTable(
+    as.data.frame(grades_table())
+  )
+  
   #####---------------------------GRADE BINS-----------------------------#####
 
   #reactively updates grade bins
@@ -497,20 +509,8 @@ shinyServer(function(input, output, session) {
   
 
   
-  ### UI with TEXT about Course Stats & Students with Low Scores
-  
-  # output$studentStats <- renderUI(
-  #   if (!is.null(grades$table) && ncol(grades$table > 3)){
-  #     HTML(markdown::renderMarkdown(text = paste(paste0("", getGradeStats(grades$table), '<br/>'), collapse = "")))
-  #   } 
-  # )
-  # 
-  # # creates list of student concerns (i.e. students with an F)
-  # output$studentConcerns <- renderUI(
-  #   if (!is.null(grades$table) && ncol(grades$table > 3)){
-  #    HTML(markdown::renderMarkdown(text = paste(paste0("- ", getStudentConcerns(grades$table, grades$bins$CutOff[4]), "\n"), collapse = "")))
-  #   } 
-  # )
+ 
+
 
   #####------------------------ ALL-GRADES TABLE------------------------#####
   #   
@@ -539,10 +539,7 @@ shinyServer(function(input, output, session) {
       paste("course_grades_", Sys.Date(), ".csv", sep = "")
     },
     content = function(filename) {
-      sid_df <- processed_sids()$unique_sids %>% select(names, sid, email, sections)
-      grades <- grades$table %>% select(Overall_Grade, Letter_Grade)
-      result = cbind(sid_df, grades)
-      write.csv(result, filename, row.names = FALSE)
+      write.csv(grades_table, filename, row.names = FALSE)
     })
   
   
