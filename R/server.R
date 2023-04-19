@@ -559,7 +559,7 @@ shinyServer(function(input, output, session) {
   #####------------------------CAT_TABLE TO JSON FILES------------------------#####
   
   #create a path to make a folder
-  path <- "gradebook-data"
+  path <- "../../gradebook-data"
   dir.create(path, showWarnings = FALSE)
 
   #save config
