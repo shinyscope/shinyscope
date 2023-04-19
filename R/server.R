@@ -263,6 +263,7 @@ shinyServer(function(input, output, session) {
   observe({
     assigns$table <- data.frame(assignments()) %>%
       filter(!str_detect(colnames, "Name|Sections|Max|Time|Late|Email|SID"))
+    
   })
   
   output$text <- renderText({"Let's upload some data first..."})
@@ -566,7 +567,8 @@ shinyServer(function(input, output, session) {
   observeEvent(input$save_config, {
     req(!is.null(categories$cat_table))
     cat_table <- categories$cat_table
-    jsonlite::write_json(cat_table, paste(path, "cat_table.json", sep = "/"))
+    config_list <- list(categories$cat_table, grades$bins)
+    jsonlite::write_json(config_list, paste(path, "cat_table.json", sep = "/"))
   })
   
   
@@ -576,7 +578,24 @@ shinyServer(function(input, output, session) {
   observeEvent(input$load_config, {
     if (file.exists(paste(path, "cat_table.json", sep = "/"))) {
       df <- jsonlite::fromJSON(paste(path, "cat_table.json", sep = "/"))
-      categories$cat_table <- df
+      categories$cat_table <- df[[1]]
+
+      grades$bins <- df[[2]]
+      updateNumericInput(session, "A", value = grades$bins$CutOff[1])
+      updateNumericInput(session, "B", value = grades$bins$CutOff[2])
+      updateNumericInput(session, "C", value = grades$bins$CutOff[3])
+      updateNumericInput(session, "D", value = grades$bins$CutOff[4])
+      updateNumericInput(session, "F", value = grades$bins$CutOff[5])
+      
+      for (x in 1:nrow(categories$cat_table)){
+        name <- categories$cat_table$Categories[x]
+        assign <- categories$cat_table$Assignments_Included[x]
+        assign <- unlist(str_split(assign, ", "))
+        assigns$table <- updateCategory(assigns$table, assign, name) 
+        grades$table <- updateCatGrade(grades$table, pivotdf(), categories$cat_table, x)
+      }
+      grades$table <- getOverallGrade(grades$table, categories$cat_table, grades$bins)
+      
     } else {
       print("File not found")
     }
