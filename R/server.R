@@ -426,7 +426,7 @@ shinyServer(function(input, output, session) {
   #####------------------------ GRADE TABLE ON DASHBOARD TAB ------------------------#####
   grades_table <- reactive({
     sid_df <- processed_sids()$unique_sids %>% select(names, sid, email, sections)
-    grades <- grades$table %>% select(Overall_Grade, Letter_Grade)
+    grades <- grades$table #%>% select(Overall_Grade, Letter_Grade)
     result = cbind(sid_df, grades)
     
     return(result)
@@ -483,6 +483,8 @@ shinyServer(function(input, output, session) {
       theme_minimal()
     return (plot)
   })
+  
+  output$bins <- renderDataTable({(grades$bins)})
   
   #####---------------------------DASHBOARD-----------------------------#####
   
