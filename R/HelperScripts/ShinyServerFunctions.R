@@ -2,9 +2,8 @@
 #This script is not designed for code reusability like other helper but rather cleaner organization
 #UI setup for modal pop-up
 modal_confirm <- modalDialog(
-  "Editing already existing assignment type",
-  title = "Edit",
-  footer = tagList(
+  title = "Edit Existing Assignment Type",
+  footer = NULL,
     numericInput("nRow", "Enter Category Row:", 1, min = 1, step = 1),
     textInput("change_name", "Enter Category Name", value = "", width = NULL, placeholder = NULL),
     numericInput("change_weight", "What Weight?", min = 0, max = 1, value = 0, step = 0.05),
@@ -44,9 +43,9 @@ modal_confirm <- modalDialog(
       actionButton("cancel", "Cancel"),
       actionButton("done", "Done")
     ),
-    actionButton("delete", "Delete", style = "position:absolute; top:25px; right:15px;")
+    actionButton("delete", "Delete", style = "position:absolute; top:-65px; right:15px;")
   )
-)
+
 
 
 #update a row in category table
@@ -70,9 +69,9 @@ updateRow <- function(cat_table, row, name, weight, assignments, num_drops, grad
 
 
 add_new_category_modal <- modalDialog(
-  "Adding New Assignment Category",
-  title = "Add New",
-  footer = tagList(
+ 
+  title = "Add New Assignment Type",
+  footer = NULL,
     textInput("cat_name", "Enter Category Name", value = "", width = NULL, placeholder = NULL),
     numericInput("weight", "How Much is This Worth?", min = 0, max = 1, value = 0.5, step = 0.05),
     numericInput("num_drops", "How Many Drops:", 0, step = 1),
@@ -111,4 +110,4 @@ add_new_category_modal <- modalDialog(
         actionButton("create", "Save")
     )
     
-  ))
+  )
