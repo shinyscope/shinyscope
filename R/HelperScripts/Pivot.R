@@ -17,7 +17,7 @@ pivot <- function(new_data, assignments_dataframe, cat_table){
       left_join(assignments_dataframe %>% select(new_colnames, colnames, category), by = c("assignments" = "new_colnames"))
     if (!is.null(cat_table)){
     add_cat_table_to_pivot <- add_categories_to_pivot %>%
-      left_join(cat_table %>% select(Categories, Weights, Drops, Grading_Policy), by = c("category"="Categories"))
+      left_join(cat_table %>% select(Categories, Weights, Drops, Grading_Policy, Clobber_Policy, Late_Policy), by = c("category"="Categories"))
       return(add_cat_table_to_pivot)
     }
   else{
