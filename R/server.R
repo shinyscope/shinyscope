@@ -526,23 +526,33 @@ shinyServer(function(input, output, session) {
 
 
   #####------------------------ ALL-GRADES TABLE------------------------#####
-  #   
-  # output$all_grades_table <- renderDataTable({
-  #   pivotdf <- pivotdf()
-  #   AllGradesTable(pivotdf,categories$cat_table)
-  # })
   
-  output$all_grades_table <- renderDataTable({
+  ### Step1: AllGradesTable calculations. 
+  allgradestable <- reactive({
     pivotdf <- pivotdf()
     if (!is.null(categories$cat_table) && length(categories$cat_table) > 0) {
       AllGradesTable(pivotdf, categories$cat_table)
+    } 
+  })
+  output$all_grades_table <- renderDataTable({
+    allgradestable()
+  })
+  
+  ### Step2: GradesPerCategory calculations. 
+  gradespercategory <- reactive({
+    pivotdf <- pivotdf()
+    if (!is.null(categories$cat_table) && length(categories$cat_table) > 0) {
+      AllGradesTable(pivotdf, categories$cat_table) %>%
+        GradesPerCategory()
     } else {
-      # Handle the case when categories$cat_table is empty
-      # You can either return an empty data frame or use a default value for categories$cat_table
-      # Here, I am returning an empty data frame
-      data.frame()
+      NULL
     }
   })
+  
+  output$grades_per_category <- renderDataTable({
+    gradespercategory()
+  })
+  
   
   #####------------------------Download Grades File------------------------#####
   

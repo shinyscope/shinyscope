@@ -1,4 +1,4 @@
-# The idea is the following:
+# The idea for All_Grades_table is the following:
 # Note: cat_table and pivot are already merged at this point
 #
 # 1) add columns for each grading policy from syllabus
@@ -6,7 +6,7 @@
 #                             a grade after weight is considered 
 #
 #
-# Create another table:
+# Create another table GradesPerCategory:
 # 3) start merging: 
 #                   drop lowest graded assignments per drop policy
 #                   group by category and student (still have several rows per student 
@@ -47,4 +47,19 @@ AllGradesTable <- function(pivotdf, cat_table){
   combined_data <- bind_rows(equally_weighted, weighted_by_points)
   
   return(combined_data)
+}
+
+
+GradesPerCategory <- function(allgradestable){
+    grades_per_category <- allgradestable %>%
+      group_by(sid, category) %>%
+      arrange(raw_pts_after_lateness) %>% #arrange in ascending order based on group_by
+      slice(((as.numeric(Drops) + 1):n())) %>% #drop the number of drops and keep the rest assignments
+   #   summarise(percentage_grade = round((sum(grade_after_weight) / sum(max_points)), 2))%>%
+      mutate(percentage_grade = round((sum(grade_after_weight) / sum(max_points)), 2)) %>%
+    
+      select(names, sid, category, percentage_grade)
+      
+    
+    return(grades_per_category)
 }

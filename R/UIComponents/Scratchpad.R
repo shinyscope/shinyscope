@@ -17,7 +17,9 @@ Scratchpad <- tabPanel("Scratchpad",
                            tabPanel(h5("grades$bins"),
                                     dataTableOutput("bins")),
                            tabPanel(h5("all_grades_table"),
-                                    dataTableOutput("all_grades_table"))
+                                    dataTableOutput("all_grades_table")),
+                           tabPanel(h5("grades_per_category"),
+                                    dataTableOutput("grades_per_category"))
                            
                            ))
                        
