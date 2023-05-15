@@ -8,7 +8,7 @@ source(paste0(HSLocation, "Pivot.R"))
 source(paste0(HSLocation, "ProcessSid.R"))
 source(paste0(HSLocation, "Grading.R"))
 source(paste0(HSLocation, "Dynamic_UI_Categories.R"))
-source(paste0(HSLocation, "AllGradesTable.R"))
+source(paste0(HSLocation, "GradesTable.R"))
 source(paste0(HSLocation, "Distributions.R"))
 
 shinyServer(function(input, output, session) {
