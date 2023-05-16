@@ -17,8 +17,20 @@ source(paste0(UICompDirectory, "Dashboard.R"), local = TRUE)
 
 
 shinyUI(
-  fluidPage(theme = bs_theme(version = 5, bootswatch = "minty"),
-            navbarPage(title = "Gradebook",
+ # fluidPage(theme = bs_theme(version = 5, bootswatch = "minty"),
+    fluidPage(
+      theme = bs_theme(
+  
+      version = 5, bootswatch = "yeti",
+      base_font = font_google("Roboto"),
+      code_font = c("Courier", "monospace"),
+      "primary" = "#007bff"
+    )
+    ,
+  
+            navbarPage(
+           
+              title = "Gradebook",
               tags$div(fileInput("upload", "", accept = c(".csv"))
             ),
             Dashboard,
