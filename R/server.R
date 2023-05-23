@@ -278,18 +278,24 @@ shinyServer(function(input, output, session) {
   )
 
   #####--------------------------- EDIT MODAL  ----------------------------#####
+ 
   
   # modal opens when Edit button pressed and updates default settings of input widgets
-  observeEvent(input$edit, {
-    showModal(modal_confirm)
-    updateNumericInput(session, "nRow", value = 1, min = 1, max = nrow(categories$cat_table))
-  })
-  
-  observeEvent(input$nRow, {
-    #updates default inputs when picking different rows
-    num <- input$nRow
+  observe({
+    req(!is.null(categories$table))
     
-    if (!is.null(categories$cat_table) && num <= nrow(categories$cat_table)){
+    for (n in 1:nrow(categories$cat_table)) {
+      button_id <- button_ids()[n]
+      print(button_id)
+      print(button_ids)
+    }
+      observeEvent(input$edit_button_1, {
+        showModal(modal_confirm)
+        
+        num <- as.numeric(strsplit(button_id, "_")[[1]][3]) #regex - it takes the number value from the ID at the end
+    
+    if (num <= nrow(categories$cat_table)){
+     
       updateTextInput(session, "change_name", value = categories$cat_table$Categories[num])
       updateNumericInput(session, "change_weight", value = categories$cat_table$Weights[num])
       
@@ -318,13 +324,14 @@ shinyServer(function(input, output, session) {
         if (length(prev_policy) == 4){
           updateRadioButtons(session, "change_late_boolean2", selected = "Yes")
           updateNumericInput(session, "change_late_p2", value = prev_policy[4])
-        }
+      
       }
-      
-      
+      }
     }
+      })
+    
   })
-  
+
   
   #####------------------------Modal Done button ------------------------#####
   # modal closes when Done button pressed, categories are updated

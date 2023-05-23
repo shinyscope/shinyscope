@@ -1,18 +1,21 @@
-dynamic_ui_categories <- function(categories_table){
+dynamic_ui_categories <- function(categories_table) {
+  button_ids <- reactive({
+    paste0("edit_button_", 1:nrow(categories_table))
+  })
   
-  #Create UI elements for each row in the datatable
-  lapply(1:nrow(categories_table), function(i){
-    category <- categories_table[i,1]
-    weight <- categories_table[i,2]
-    assignments <- categories_table[i,3]
-    drops <- categories_table[i,4]
-    grading_policy <- categories_table[i,5]
-    clobber <- categories_table[i,6]
-    late_policy <- categories_table[i,7]
+  # Create UI elements for each row in the datatable
+  lapply(1:nrow(categories_table), function(i) {
+    category <- categories_table[i, 1]
+    weight <- categories_table[i, 2]
+    assignments <- categories_table[i, 3]
+    drops <- categories_table[i, 4]
+    grading_policy <- categories_table[i, 5]
+    clobber <- categories_table[i, 6]
+    late_policy <- categories_table[i, 7]
     late <- unlist(str_split(late_policy, ";"))
-    if (length(late)>= 2){
+    if (length(late) >= 2) {
       late_policy <- paste0("Lateness of ", late[1], " allowed with a deduction of ", late[2])
-      if (length(late) == 4){
+      if (length(late) == 4) {
         late_policy <- paste0(late_policy, "; Lateness of ", late[1], " allowed with a deduction of ", late[2])
       }
     }
@@ -24,9 +27,19 @@ dynamic_ui_categories <- function(categories_table){
       '</div>'
     )
     
+    # unique id for each edit_button
+    
+    edit_button_id <- button_ids()[i]
+  
+    
+    # create an actionButton for each Edit button
+    edit_button <- actionButton(edit_button_id, "Edit", icon = icon("edit"))
     
     tagList(
       HTML(category_html),
+      
+      # edit_button in the UI
+      div(edit_button, style = "position: relative; top: 10px; right: 10px;"),
       
       div(
         style = "border-left: 1px solid #ddd; padding-left: 10px; display: flex;",
