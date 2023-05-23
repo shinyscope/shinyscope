@@ -17,7 +17,7 @@ modal_confirm <- modalDialog(
     )
   ),
   
-    numericInput("nRow", "Enter Category Row:", 1, min = 1, step = 1),
+    # numericInput("nRow", "Enter Category Row:", 1, min = 1, step = 1),
     textInput("change_name", "Enter Category Name", value = "", width = NULL, placeholder = NULL),
     numericInput("change_weight", "What Weight?", min = 0, max = 1, value = 0, step = 0.05),
     numericInput("change_drops", "How Many Drops:", 0, step = 1),
